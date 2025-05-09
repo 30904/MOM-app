@@ -22,7 +22,13 @@ class Config:
     # Socket.IO configuration
     SOCKETIO_ASYNC_MODE = 'eventlet'
     
+    SOCKETIO_MESSAGE_QUEUE = None  # Use in-memory queue for development
+    
     @staticmethod
     def init_app(app):
         # Create upload folder if it doesn't exist
-        os.makedirs(Config.UPLOAD_FOLDER, exist_ok=True) 
+        os.makedirs(Config.UPLOAD_FOLDER, exist_ok=True)
+        
+        # Ensure the upload folder is writable
+        if not os.access(Config.UPLOAD_FOLDER, os.W_OK):
+            raise RuntimeError(f"Upload folder {Config.UPLOAD_FOLDER} is not writable") 
