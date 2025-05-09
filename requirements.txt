@@ -10,4 +10,5 @@ python-dotenv==1.0.1
 numpy==1.26.4
 pydub==0.25.1
 en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1-py3-none-any.whl
-eventlet==0.35.1 
+eventlet==0.35.1
+scipy==1.12.0 
