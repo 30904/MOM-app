@@ -1,0 +1,13 @@
+flask==3.0.2
+flask-socketio==5.3.6
+python-socketio==5.11.1
+python-engineio==4.9.0
+openai-whisper==20231117
+spacy==3.7.4
+pymongo==4.6.2
+pyaudio==0.2.14
+python-dotenv==1.0.1
+numpy==1.26.4
+pydub==0.25.1
+en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1-py3-none-any.whl
+eventlet==0.35.1 
