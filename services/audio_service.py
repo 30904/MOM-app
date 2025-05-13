@@ -103,6 +103,9 @@ class AudioProcessor:
     
     def apply_filters(self, audio_data: np.ndarray) -> np.ndarray:
         """Apply all filters in sequence."""
+        # Ensure input is a numpy array
+        audio_data = np.asarray(audio_data)
+        
         # Apply pre-filtering
         audio = signal.filtfilt(*self.filters["prefilter"], audio_data)
         
@@ -116,6 +119,19 @@ class AudioProcessor:
     
     def spectral_gate(self, audio_data: np.ndarray, noise_profile: Optional[np.ndarray] = None) -> np.ndarray:
         """Apply spectral gating for noise reduction."""
+        # Ensure inputs are numpy arrays
+        audio_data = np.asarray(audio_data)
+        if noise_profile is not None:
+            noise_profile = np.asarray(noise_profile)
+            # Ensure noise profile length matches audio data
+            if len(noise_profile) > len(audio_data):
+                noise_profile = noise_profile[:len(audio_data)]
+            elif len(noise_profile) < len(audio_data):
+                # Pad noise profile if it's shorter
+                noise_profile = np.pad(noise_profile, 
+                                     (0, len(audio_data) - len(noise_profile)),
+                                     mode='wrap')
+        
         # Compute FFT
         spectrum = fft(audio_data)
         magnitude = np.abs(spectrum)
@@ -123,9 +139,12 @@ class AudioProcessor:
         
         # Apply spectral gating
         if noise_profile is not None:
-            noise_magnitude = np.abs(fft(noise_profile))
-            gate = magnitude > (noise_magnitude * 2)  # Dynamic threshold
+            noise_spectrum = fft(noise_profile)
+            noise_magnitude = np.abs(noise_spectrum)
+            # Dynamic threshold based on noise profile
+            gate = magnitude > (noise_magnitude * 2)
         else:
+            # Static threshold when no noise profile is available
             gate = magnitude > np.power(10, self.spectral_gate_threshold / 20)
         
         # Apply gate and reconstruct signal
@@ -136,6 +155,9 @@ class AudioProcessor:
                              threshold: float = -20, 
                              ratio: float = 4) -> np.ndarray:
         """Apply dynamic range compression."""
+        # Ensure input is a numpy array
+        audio_data = np.asarray(audio_data)
+        
         # Convert to dB
         db = 20 * np.log10(np.abs(audio_data) + 1e-10)
         
@@ -304,18 +326,24 @@ class AudioService:
                 
                 # Convert to numpy array
                 audio_array = np.frombuffer(audio_data, dtype=np.float32)
+                audio_array = np.asarray(audio_array)  # Ensure it's a proper numpy array
                 
                 # Collect noise profile
                 if self.noise_samples_count < self.required_noise_samples:
                     if self.noise_profile is None:
                         self.noise_profile = audio_array
                     else:
+                        # Ensure noise_profile is a numpy array
+                        self.noise_profile = np.asarray(self.noise_profile)
                         self.noise_profile = np.concatenate([self.noise_profile, audio_array])
                     self.noise_samples_count += 1
                     continue
                 
                 # Process audio
                 processed_audio = self._process_audio_chunk(audio_array)
+                
+                # Ensure processed_audio is a numpy array
+                processed_audio = np.asarray(processed_audio)
                 
                 # Add to frames
                 self.frames.append(processed_audio.tobytes())
@@ -333,14 +361,22 @@ class AudioService:
                 continue
             except Exception as e:
                 logger.error("Error processing audio: %s", str(e))
+                logger.exception("Full traceback:")
     
     def _process_audio_chunk(self, audio_array: np.ndarray) -> np.ndarray:
         """Apply comprehensive audio processing to a chunk of audio."""
+        # Convert generator to array if needed
+        if hasattr(audio_array, '__iter__') and not isinstance(audio_array, (np.ndarray, list)):
+            audio_array = np.array(list(audio_array))
+            
         # Apply filters
         filtered_audio = self.processor.apply_filters(audio_array)
         
         # Apply spectral gating if we have a noise profile
         if self.noise_profile is not None:
+            # Convert noise profile to array if needed
+            if hasattr(self.noise_profile, '__iter__') and not isinstance(self.noise_profile, (np.ndarray, list)):
+                self.noise_profile = np.array(list(self.noise_profile))
             filtered_audio = self.processor.spectral_gate(
                 filtered_audio,
                 self.noise_profile[:len(filtered_audio)]

@@ -108,12 +108,13 @@ def handle_audio_chunk(data):
     try:
         audio_chunk = data.get('audio')
         meeting_id = data.get('meeting_id')
+        sample_rate = data.get('sample_rate', 44100)  # Default to 44.1kHz if not provided
         
         if not audio_chunk or not meeting_id or meeting_id not in meetings:
             return
         
         # Process the audio chunk
-        text = transcription_service.transcribe_chunk(audio_chunk)
+        text = transcription_service.transcribe_chunk(audio_chunk, sample_rate=sample_rate)
         if text:
             # Extract action items
             action_items = nlp_service.extract_action_items(text)
@@ -128,6 +129,9 @@ def handle_audio_chunk(data):
                 'action_items': action_items
             })
     except Exception as e:
+        print(f"Error processing audio chunk: {str(e)}")
+        import traceback
+        traceback.print_exc()
         emit('transcription_error', {'error': str(e)})
 
 def process_audio_file(filepath, meeting_id):
