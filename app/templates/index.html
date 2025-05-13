@@ -147,7 +147,12 @@
     <div id="toastContainer" class="fixed bottom-4 right-4 z-50"></div>
 
     <script>
-        const socket = io();
+        // Initialize Socket.IO with the correct port
+        const socket = io({
+            path: '/socket.io',
+            transports: ['websocket', 'polling'],
+            port: 8081
+        });
         let currentMeetingId = null;
         let mediaRecorder = null;
         let audioChunks = [];
@@ -441,12 +446,16 @@
                             // Decode the audio data
                             const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
                             
-                            // Get the Float32Array from the first channel
+                            // Get the Float32Array from the first channel and ensure it's in the correct format
                             const audioData = audioBuffer.getChannelData(0);
+                            
+                            // Ensure the data is normalized between -1 and 1
+                            const maxVal = Math.max(...Array.from(audioData).map(Math.abs));
+                            const normalizedData = maxVal > 1 ? Array.from(audioData).map(x => x / maxVal) : Array.from(audioData);
                             
                             // Send the audio data
                             socket.emit('audio_chunk', {
-                                audio: Array.from(audioData), // Convert to regular array for transmission
+                                audio: normalizedData,
                                 meeting_id: currentMeetingId,
                                 sample_rate: audioBuffer.sampleRate
                             });
@@ -507,21 +516,31 @@
             formData.append('file', file);
 
             try {
+                showToast('Uploading file...', 'info');
                 const response = await fetch('/upload', {
                     method: 'POST',
                     body: formData
                 });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
                 
                 const data = await response.json();
                 if (data.error) {
                     showToast(data.error, 'error');
                 } else {
                     currentMeetingId = data.meeting_id;
-                    showToast('File uploaded successfully', 'success');
+                    showToast('File uploaded successfully. Processing...', 'success');
+                    
+                    // Clear previous content
+                    transcriptionDiv.innerHTML = '<p class="text-gray-600 text-center py-4">Processing audio file...</p>';
+                    actionItemsDiv.innerHTML = '<p class="text-gray-600 text-center py-4">Extracting action items...</p>';
+                    summaryDiv.innerHTML = '<p class="text-gray-600 text-center py-4">Generating summary...</p>';
                 }
             } catch (err) {
                 console.error('Error uploading file:', err);
-                showToast('Error uploading file. Please try again.', 'error');
+                showToast('Error uploading file: ' + err.message, 'error');
             }
         });
 

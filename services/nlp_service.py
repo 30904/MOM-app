@@ -51,11 +51,14 @@ class NLPService:
         """Generate a summary of the meeting transcript."""
         doc = self.nlp(text)
         
+        # Convert doc.sents to a list first
+        sentences = list(doc.sents)
+        
         # Extract key sentences based on important entities and noun phrases
         important_sentences = []
         sentence_scores = {}
         
-        for sent in doc.sents:
+        for sent in sentences:
             score = 0
             
             # Score based on entities
@@ -84,7 +87,7 @@ class NLPService:
         )
         
         # Take top 3 sentences or 20% of total sentences, whichever is greater
-        num_sentences = max(3, int(len(doc.sents) * 0.2))
+        num_sentences = max(3, int(len(sentences) * 0.2))
         summary_sentences = sorted_sentences[:num_sentences]
         
         # Sort sentences by their original order
