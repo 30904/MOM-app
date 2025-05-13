@@ -431,42 +431,44 @@
                     updateAudioQualityIndicator(status);
                 });
 
-                mediaRecorder = new MediaRecorder(processedStream);
+                mediaRecorder = new MediaRecorder(processedStream, {
+                    mimeType: 'audio/webm',
+                    audioBitsPerSecond: 16000
+                });
                 audioChunks = [];
                 
                 mediaRecorder.ondataavailable = async (event) => {
                     if (event.data.size > 0) {
                         try {
-                            // Convert blob to array buffer
-                            const arrayBuffer = await event.data.arrayBuffer();
+                            // Convert blob to Float32Array
+                            const buffer = await event.data.arrayBuffer();
+                            const audioData = new Float32Array(buffer.byteLength / 4);
                             
-                            // Create audio context for decoding
-                            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                            // Copy the buffer data to the Float32Array
+                            new DataView(buffer).forEach((value, index) => {
+                                audioData[index] = value / 32768.0; // Convert 16-bit PCM to float
+                            });
                             
-                            // Decode the audio data
-                            const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
-                            
-                            // Get the Float32Array from the first channel and ensure it's in the correct format
-                            const audioData = audioBuffer.getChannelData(0);
-                            
-                            // Ensure the data is normalized between -1 and 1
+                            // Normalize the audio data
                             const maxVal = Math.max(...Array.from(audioData).map(Math.abs));
-                            const normalizedData = maxVal > 1 ? Array.from(audioData).map(x => x / maxVal) : Array.from(audioData);
+                            if (maxVal > 0) {
+                                for (let i = 0; i < audioData.length; i++) {
+                                    audioData[i] = audioData[i] / maxVal;
+                                }
+                            }
                             
                             // Send the audio data
                             socket.emit('audio_chunk', {
-                                audio: normalizedData,
+                                audio: Array.from(audioData), // Convert to regular array for socket.io
                                 meeting_id: currentMeetingId,
-                                sample_rate: audioBuffer.sampleRate
+                                sample_rate: 16000 // Fixed sample rate for consistency
                             });
                             
                             audioChunks.push(event.data);
                             
-                            // Clean up
-                            await audioCtx.close();
                         } catch (err) {
                             console.error('Error processing audio chunk:', err);
-                            showToast('Error processing audio: ' + err.message, 'error');
+                            showToast('Error processing audio chunk. Recording will continue.', 'error');
                         }
                     }
                 };
@@ -552,27 +554,52 @@
         });
 
         socket.on('transcription_update', (data) => {
+            // Clear initial placeholder if present
             if (transcriptionDiv.querySelector('.text-gray-500.italic')) {
                 transcriptionDiv.innerHTML = '';
             }
-            const newText = document.createElement('p');
-            newText.textContent = data.text;
-            newText.className = 'mb-3 text-gray-800';
+            
+            // Create a new paragraph for the transcription
+            const newText = document.createElement('div');
+            newText.className = 'mb-4 p-3 bg-white rounded-lg shadow-sm';
+            newText.innerHTML = `
+                <p class="text-gray-800">${data.text}</p>
+                <span class="text-xs text-gray-500">${new Date().toLocaleTimeString()}</span>
+            `;
             transcriptionDiv.appendChild(newText);
+            
+            // Scroll to bottom
             transcriptionDiv.scrollTop = transcriptionDiv.scrollHeight;
 
+            // Update action items if any
             if (data.action_items && data.action_items.length > 0) {
                 updateActionItems(data.action_items);
             }
         });
 
         socket.on('processing_complete', (data) => {
+            // Update transcription
+            transcriptionDiv.innerHTML = `
+                <div class="prose">
+                    <p class="text-gray-800">${data.transcription}</p>
+                </div>
+            `;
+            
+            // Update action items
+            if (data.action_items && data.action_items.length > 0) {
+                updateActionItems(data.action_items);
+            } else {
+                actionItemsDiv.innerHTML = '<p class="text-gray-600 text-center py-4">No action items found.</p>';
+            }
+            
+            // Update summary
             summaryDiv.innerHTML = `
                 <div class="prose">
                     <h3 class="text-xl font-semibold mb-4">Meeting Summary</h3>
                     <p class="text-gray-800">${data.summary}</p>
                 </div>
             `;
+            
             showToast('Processing completed', 'success');
         });
 
