@@ -10,7 +10,6 @@ def create_app(config_class=Config):
     
     # Initialize SocketIO
     socketio.init_app(app, 
-                     async_mode='threading',
                      cors_allowed_origins="*")
     
     # Initialize the upload folder

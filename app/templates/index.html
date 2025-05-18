@@ -722,6 +722,39 @@
                     indicator.innerHTML = '<i class="fas fa-microphone mr-2"></i><span>Audio Quality: Good</span>';
             }
         }
+
+        // Add form submission handler
+        uploadForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const file = audioFileInput.files[0];
+            if (!file) {
+                showToast('Please select a file first', 'error');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showToast('File uploaded successfully', 'success');
+                    currentMeetingId = data.meeting_id;
+                } else {
+                    showToast(data.error || 'Upload failed', 'error');
+                }
+            } catch (err) {
+                console.error('Upload error:', err);
+                showToast('Upload failed: ' + err.message, 'error');
+            }
+        });
     </script>
 </body>
 </html> 
