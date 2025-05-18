@@ -617,92 +617,157 @@
             showToast('Recording session initialized', 'success');
         });
 
+        socket.on('connect', () => {
+            debugLog('Socket.IO connected');
+            showToast('Connected to server', 'success');
+        });
+
+        socket.on('connect_error', (error) => {
+            debugLog('Socket.IO connection error:', error);
+            showToast('Connection error: ' + error.message, 'error');
+        });
+
         socket.on('transcription_update', (data) => {
-            debugLog('Received transcription update:', data);
-            // Clear initial placeholder if present
-            if (transcriptionDiv.querySelector('.text-gray-500.italic')) {
-                transcriptionDiv.innerHTML = '';
+            debugLog('Received transcription update', data);
+            
+            // Update transcription
+            if (data.text) {
+                if (transcriptionDiv.querySelector('.text-gray-500')) {
+                    transcriptionDiv.innerHTML = ''; // Clear placeholder
+                }
+                const p = document.createElement('p');
+                p.className = 'mb-2';
+                p.textContent = data.text;
+                transcriptionDiv.appendChild(p);
+                transcriptionDiv.scrollTop = transcriptionDiv.scrollHeight;
             }
             
-            // Create a new paragraph for the transcription
-            const newText = document.createElement('div');
-            newText.className = 'mb-4 p-3 bg-white rounded-lg shadow-sm';
-            newText.innerHTML = `
-                <p class="text-gray-800">${data.text}</p>
-                <span class="text-xs text-gray-500">${new Date().toLocaleTimeString()}</span>
-            `;
-            transcriptionDiv.appendChild(newText);
-            
-            // Scroll to bottom
-            transcriptionDiv.scrollTop = transcriptionDiv.scrollHeight;
-
-            // Update action items if any
+            // Update action items
             if (data.action_items && data.action_items.length > 0) {
-                updateActionItems(data.action_items);
+                if (actionItemsDiv.querySelector('.text-gray-500')) {
+                    actionItemsDiv.innerHTML = ''; // Clear placeholder
+                }
+                data.action_items.forEach(item => {
+                    const actionItem = createActionItemElement(item);
+                    actionItemsDiv.appendChild(actionItem);
+                });
+                actionItemsDiv.scrollTop = actionItemsDiv.scrollHeight;
             }
         });
 
         socket.on('processing_complete', (data) => {
+            debugLog('Processing complete', data);
+            
             // Update transcription
-            transcriptionDiv.innerHTML = `
-                <div class="prose">
-                    <p class="text-gray-800">${data.transcription}</p>
-                </div>
-            `;
+            if (data.transcription) {
+                transcriptionDiv.innerHTML = '';
+                const p = document.createElement('p');
+                p.className = 'mb-2';
+                p.textContent = data.transcription;
+                transcriptionDiv.appendChild(p);
+            }
             
             // Update action items
             if (data.action_items && data.action_items.length > 0) {
-                updateActionItems(data.action_items);
-            } else {
-                actionItemsDiv.innerHTML = '<p class="text-gray-600 text-center py-4">No action items found.</p>';
+                actionItemsDiv.innerHTML = '';
+                data.action_items.forEach(item => {
+                    const actionItem = createActionItemElement(item);
+                    actionItemsDiv.appendChild(actionItem);
+                });
             }
             
             // Update summary
-            summaryDiv.innerHTML = `
-                <div class="prose">
-                    <h3 class="text-xl font-semibold mb-4">Meeting Summary</h3>
-                    <p class="text-gray-800">${data.summary}</p>
-                </div>
-            `;
+            if (data.summary) {
+                summaryDiv.innerHTML = '';
+                if (typeof data.summary === 'string') {
+                    const p = document.createElement('p');
+                    p.className = 'mb-2';
+                    p.textContent = data.summary;
+                    summaryDiv.appendChild(p);
+                } else {
+                    // Handle structured summary
+                    if (data.summary.summary) {
+                        const mainSummary = document.createElement('div');
+                        mainSummary.className = 'mb-4';
+                        mainSummary.innerHTML = `
+                            <h3 class="font-semibold mb-2">Overall Summary</h3>
+                            <p>${data.summary.summary}</p>
+                        `;
+                        summaryDiv.appendChild(mainSummary);
+                    }
+                    
+                    if (data.summary.topic_summaries && data.summary.topic_summaries.length > 0) {
+                        const topicsDiv = document.createElement('div');
+                        topicsDiv.className = 'mb-4';
+                        topicsDiv.innerHTML = `
+                            <h3 class="font-semibold mb-2">Topic Summaries</h3>
+                            ${data.summary.topic_summaries.map((topic, i) => `
+                                <div class="mb-2">
+                                    <p class="text-sm text-gray-600">Topic ${i + 1}</p>
+                                    <p>${topic}</p>
+                                </div>
+                            `).join('')}
+                        `;
+                        summaryDiv.appendChild(topicsDiv);
+                    }
+                    
+                    if (data.summary.key_points && data.summary.key_points.length > 0) {
+                        const keyPointsDiv = document.createElement('div');
+                        keyPointsDiv.innerHTML = `
+                            <h3 class="font-semibold mb-2">Key Points</h3>
+                            <ul class="list-disc pl-4">
+                                ${data.summary.key_points.map(point => `
+                                    <li class="mb-1">${point}</li>
+                                `).join('')}
+                            </ul>
+                        `;
+                        summaryDiv.appendChild(keyPointsDiv);
+                    }
+                }
+            }
             
-            showToast('Processing completed', 'success');
+            showToast('Processing completed successfully', 'success');
         });
 
         socket.on('processing_error', (data) => {
-            showToast(`Error processing audio: ${data.error}`, 'error');
+            debugLog('Processing error', data);
+            showToast('Error: ' + data.error, 'error');
         });
 
-        function updateActionItems(actionItems) {
-            if (actionItemsDiv.querySelector('.text-gray-500.italic')) {
-                actionItemsDiv.innerHTML = '';
-            }
-            actionItemsDiv.innerHTML = actionItems.map(item => `
-                <div class="bg-gray-50 p-4 rounded-lg border-l-4 ${
-                    item.status === 'completed' ? 'border-green-500' : 'border-yellow-500'
-                }">
-                    <p class="font-medium text-gray-800">${item.text}</p>
-                    ${item.assignee ? `
-                        <div class="flex items-center mt-2 text-sm text-gray-600">
-                            <i class="fas fa-user mr-2"></i>
-                            <span>Assignee: ${item.assignee}</span>
-                        </div>
-                    ` : ''}
-                    ${item.deadline ? `
-                        <div class="flex items-center mt-2 text-sm text-gray-600">
-                            <i class="fas fa-calendar mr-2"></i>
-                            <span>Deadline: ${item.deadline}</span>
-                        </div>
-                    ` : ''}
-                    <span class="inline-block px-3 py-1 text-xs rounded-full mt-3 ${
-                        item.status === 'completed' 
-                            ? 'bg-green-100 text-green-800' 
-                            : 'bg-yellow-100 text-yellow-800'
-                    }">
-                        <i class="fas fa-${item.status === 'completed' ? 'check' : 'clock'} mr-1"></i>
-                        ${item.status}
-                    </span>
+        // Helper function to create action item element
+        function createActionItemElement(item) {
+            const div = document.createElement('div');
+            div.className = 'bg-white p-4 rounded-lg shadow mb-4 border-l-4 ' + 
+                          (item.priority === 'high' ? 'border-red-500' : 
+                           item.priority === 'medium' ? 'border-yellow-500' : 'border-green-500');
+            
+            div.innerHTML = `
+                <div class="flex justify-between items-start mb-2">
+                    <h3 class="font-semibold">${item.text}</h3>
+                    <span class="px-2 py-1 rounded text-sm ${
+                        item.priority === 'high' ? 'bg-red-100 text-red-800' :
+                        item.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                        'bg-green-100 text-green-800'
+                    }">${item.priority}</span>
                 </div>
-            `).join('');
+                ${item.assignee ? `
+                    <div class="text-sm text-gray-600 mb-1">
+                        <i class="fas fa-user mr-1"></i> ${item.assignee}
+                    </div>
+                ` : ''}
+                ${item.deadline ? `
+                    <div class="text-sm text-gray-600 mb-1">
+                        <i class="fas fa-clock mr-1"></i> ${item.deadline}
+                    </div>
+                ` : ''}
+                ${item.dependencies && item.dependencies.length > 0 ? `
+                    <div class="text-sm text-gray-600">
+                        <i class="fas fa-link mr-1"></i> Dependencies: ${item.dependencies.join(', ')}
+                    </div>
+                ` : ''}
+            `;
+            
+            return div;
         }
 
         // Update audio quality indicator
