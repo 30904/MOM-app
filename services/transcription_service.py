@@ -4,10 +4,11 @@ from config import Config
 import soundfile as sf
 import io
 import logging
+import time
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.DEBUG,  # Changed to DEBUG for more detailed logs
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
@@ -17,6 +18,9 @@ class TranscriptionService:
         try:
             logger.info(f"Initializing Whisper model with configuration: {Config.WHISPER_MODEL}")
             self.model = whisper.load_model(Config.WHISPER_MODEL)
+            self.buffer = np.array([], dtype=np.float32)  # Add buffer for accumulating audio
+            self.last_transcription_time = time.time()
+            self.min_chunk_duration = 2.0  # Minimum duration in seconds before processing
             logger.info("Whisper model initialized successfully")
         except Exception as e:
             logger.error(f"Failed to initialize Whisper model: {str(e)}")
@@ -54,8 +58,8 @@ class TranscriptionService:
     def transcribe_chunk(self, audio_data, sample_rate=None):
         """Transcribe a chunk of audio data."""
         try:
-            logger.info(f"Starting transcription of audio chunk, sample rate: {sample_rate}")
-            logger.debug(f"Audio data type: {type(audio_data)}, length: {len(audio_data) if hasattr(audio_data, '__len__') else 'unknown'}")
+            current_time = time.time()
+            logger.debug(f"Starting transcription of audio chunk, sample rate: {sample_rate}")
             
             # Handle different input types
             if isinstance(audio_data, (bytes, bytearray, memoryview)):
@@ -63,57 +67,54 @@ class TranscriptionService:
                 audio_array = np.frombuffer(audio_data, dtype=np.float32)
             elif isinstance(audio_data, np.ndarray):
                 audio_array = audio_data
+            elif isinstance(audio_data, list):
+                logger.debug("Converting list to numpy array")
+                audio_array = np.array(audio_data, dtype=np.float32)
             else:
                 error_msg = f"Unsupported audio data type: {type(audio_data)}"
                 logger.error(error_msg)
                 raise ValueError(error_msg)
             
-            # Log array properties
-            logger.debug(f"Audio array shape: {audio_array.shape}, dtype: {audio_array.dtype}")
-            
             # Ensure we have a contiguous array in the correct format
             audio_array = np.ascontiguousarray(audio_array, dtype=np.float32)
             
-            # Check for invalid values
-            if np.isnan(audio_array).any():
-                logger.error("Audio array contains NaN values")
-                raise ValueError("Audio array contains NaN values")
+            # Add to buffer
+            self.buffer = np.concatenate([self.buffer, audio_array])
             
-            if np.isinf(audio_array).any():
-                logger.error("Audio array contains infinite values")
-                raise ValueError("Audio array contains infinite values")
+            # Calculate buffer duration in seconds (assuming 16kHz sample rate)
+            buffer_duration = len(self.buffer) / 16000
+            time_since_last = current_time - self.last_transcription_time
             
-            # Normalize audio (only if it's not already normalized)
-            max_val = np.max(np.abs(audio_array))
-            if max_val > 1.0:
-                logger.debug(f"Normalizing audio array with max value: {max_val}")
-                audio_array = audio_array / max_val
+            logger.debug(f"Buffer duration: {buffer_duration}s, Time since last: {time_since_last}s")
             
-            # Resample if needed (Whisper expects 16kHz)
-            if sample_rate and sample_rate != 16000:
-                logger.debug(f"Resampling audio from {sample_rate}Hz to 16000Hz")
-                from scipy import signal
-                audio_array = signal.resample(audio_array, 
-                                           int(len(audio_array) * 16000 / sample_rate))
+            # Only process if we have enough audio data
+            if buffer_duration >= self.min_chunk_duration and time_since_last >= 1.0:
+                logger.debug("Processing accumulated audio buffer")
+                
+                # Normalize buffer
+                max_val = np.max(np.abs(self.buffer))
+                if max_val > 1.0:
+                    self.buffer = self.buffer / max_val
+                
+                # Resample if needed (Whisper expects 16kHz)
+                if sample_rate and sample_rate != 16000:
+                    logger.debug(f"Resampling audio from {sample_rate}Hz to 16000Hz")
+                    from scipy import signal
+                    self.buffer = signal.resample(self.buffer, 
+                                                int(len(self.buffer) * 16000 / sample_rate))
+                
+                # Transcribe the buffer
+                result = self.model.transcribe(self.buffer)
+                
+                # Clear the buffer and update last transcription time
+                self.buffer = np.array([], dtype=np.float32)
+                self.last_transcription_time = current_time
+                
+                if result and "text" in result and result["text"].strip():
+                    logger.info(f"Transcribed text: {result['text']}")
+                    return result["text"]
             
-            # Ensure minimum duration (Whisper typically expects at least 30ms of audio)
-            min_samples = int(16000 * 0.03)  # 30ms at 16kHz
-            if len(audio_array) < min_samples:
-                logger.debug(f"Padding audio array to minimum length: {min_samples} samples")
-                audio_array = np.pad(audio_array, (0, min_samples - len(audio_array)))
-            
-            # Log final array properties before transcription
-            logger.debug(f"Final audio array shape: {audio_array.shape}, min: {np.min(audio_array)}, max: {np.max(audio_array)}")
-            
-            # Transcribe the audio chunk
-            result = self.model.transcribe(audio_array)
-            
-            if not result or "text" not in result:
-                logger.error("Transcription result is invalid")
-                raise ValueError("Invalid transcription result")
-            
-            logger.info("Chunk transcription completed successfully")
-            return result["text"]
+            return None
             
         except Exception as e:
             logger.error(f"Error transcribing chunk: {str(e)}")

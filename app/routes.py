@@ -9,9 +9,10 @@ from services.audio_service import AudioService
 from services.transcription_service import TranscriptionService
 from services.nlp_service import NLPService
 import numpy as np
+import time
 
 # Configure logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)  # Changed to DEBUG for more detailed logs
 logger = logging.getLogger(__name__)
 
 main = Blueprint('main', __name__)
@@ -133,8 +134,10 @@ def handle_audio_chunk(data):
         sample_rate = data.get('sample_rate', 44100)
         
         if not audio_chunk or not meeting_id or meeting_id not in meetings:
-            logger.warning("Invalid audio chunk data received")
+            logger.warning(f"Invalid audio chunk data received: meeting_id={meeting_id}")
             return
+        
+        logger.debug(f"Received audio chunk for meeting {meeting_id}, length: {len(audio_chunk)}")
         
         # Convert audio chunk to numpy array if it isn't already
         if isinstance(audio_chunk, list):
@@ -142,20 +145,44 @@ def handle_audio_chunk(data):
         
         # Process the audio chunk
         text = transcription_service.transcribe_chunk(audio_chunk, sample_rate=sample_rate)
+        
         if text:
+            logger.debug(f"Transcribed text: {text}")
+            
             # Extract action items
             action_items = nlp_service.extract_action_items(text)
+            logger.debug(f"Extracted action items: {action_items}")
             
             # Update in-memory storage
-            meetings[meeting_id]['transcription'] += text + ' '
-            meetings[meeting_id]['action_items'].extend(action_items)
+            if meeting_id in meetings:
+                meetings[meeting_id]['transcription'] += text + ' '
+                if action_items:
+                    meetings[meeting_id]['action_items'].extend(action_items)
+                
+                # Generate interim summary if we have enough text
+                if len(meetings[meeting_id]['transcription'].split()) > 50:  # After 50 words
+                    interim_summary = nlp_service.generate_summary(meetings[meeting_id]['transcription'])
+                    meetings[meeting_id]['summary'] = interim_summary
+                    
+                    # Emit the results back to the client with structured summary
+                    emit('transcription_update', {
+                        'text': text,
+                        'action_items': action_items,
+                        'summary': {
+                            'main_summary': interim_summary.get('summary', interim_summary) if isinstance(interim_summary, dict) else interim_summary,
+                            'topic_summaries': interim_summary.get('topic_summaries', []) if isinstance(interim_summary, dict) else [],
+                            'key_points': interim_summary.get('key_points', []) if isinstance(interim_summary, dict) else []
+                        }
+                    })
+                else:
+                    # Emit just the transcription and action items
+                    emit('transcription_update', {
+                        'text': text,
+                        'action_items': action_items
+                    })
+                
+                logger.debug(f"Updated meeting {meeting_id} with new content")
             
-            # Emit the results back to the client
-            emit('transcription_update', {
-                'text': text,
-                'action_items': action_items
-            })
-            logger.debug(f"Processed audio chunk for meeting {meeting_id}: {text[:50]}...")
     except Exception as e:
         logger.error(f"Error processing audio chunk: {str(e)}", exc_info=True)
         emit('transcription_error', {'error': str(e)})
@@ -171,14 +198,20 @@ def process_audio_file(filepath, meeting_id):
         
         # Transcribe the full audio file
         transcription = transcription_service.transcribe_file(filepath)
-        logger.info("Transcription completed")
+        logger.info(f"Transcription completed: {transcription[:100]}...")  # Log first 100 chars
+        
+        if not transcription:
+            raise ValueError("Transcription failed - no text generated")
         
         # Extract action items and generate summary
         action_items = nlp_service.extract_action_items(transcription)
-        logger.info("Action items extracted")
+        logger.info(f"Action items extracted: {len(action_items)} items")
         
         summary = nlp_service.generate_summary(transcription)
-        logger.info("Summary generated")
+        if isinstance(summary, dict):
+            logger.info(f"Generated structured summary with {len(summary.get('topic_summaries', []))} topics")
+        else:
+            logger.info(f"Generated plain text summary: {str(summary)[:100]}...")
         
         # Update in-memory storage
         meetings[meeting_id].update({
@@ -192,10 +225,27 @@ def process_audio_file(filepath, meeting_id):
         os.remove(filepath)
         logger.info(f"Audio file removed: {filepath}")
         
+        # First, send the transcription in chunks
+        chunk_size = 1000  # characters
+        transcription_chunks = [transcription[i:i+chunk_size] 
+                              for i in range(0, len(transcription), chunk_size)]
+        
+        for i, chunk in enumerate(transcription_chunks):
+            socketio.emit('transcription_update', {
+                'text': chunk,
+                'is_final': i == len(transcription_chunks) - 1
+            })
+            time.sleep(0.1)  # Small delay between chunks
+        
+        # Then send the complete data with structured summary
         socketio.emit('processing_complete', {
             'meeting_id': meeting_id,
-            'summary': summary,
             'transcription': transcription,
+            'summary': {
+                'main_summary': summary.get('summary', summary) if isinstance(summary, dict) else summary,
+                'topic_summaries': summary.get('topic_summaries', []) if isinstance(summary, dict) else [],
+                'key_points': summary.get('key_points', []) if isinstance(summary, dict) else []
+            },
             'action_items': action_items
         })
         
