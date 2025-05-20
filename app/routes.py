@@ -10,6 +10,7 @@ from services.transcription_service import TranscriptionService
 from services.nlp_service import NLPService
 import numpy as np
 import time
+import traceback
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)  # Changed to DEBUG for more detailed logs
@@ -127,65 +128,72 @@ def handle_recording_stop(data):
 
 @socketio.on('audio_chunk')
 def handle_audio_chunk(data):
-    """Process incoming audio chunks in real-time."""
     try:
+        logger.debug('Received audio chunk')
         audio_chunk = data.get('audio')
         meeting_id = data.get('meeting_id')
-        sample_rate = data.get('sample_rate', 44100)
         
-        if not audio_chunk or not meeting_id or meeting_id not in meetings:
-            logger.warning(f"Invalid audio chunk data received: meeting_id={meeting_id}")
+        if not audio_chunk or not meeting_id:
+            logger.warning('Missing audio chunk or meeting_id')
+            socketio.emit('transcription_error', {'error': 'Missing audio chunk or meeting_id'})
             return
         
-        logger.debug(f"Received audio chunk for meeting {meeting_id}, length: {len(audio_chunk)}")
+        logger.debug(f'Processing audio chunk for meeting {meeting_id}')
         
-        # Convert audio chunk to numpy array if it isn't already
+        # Convert audio chunk to numpy array if it's a list
         if isinstance(audio_chunk, list):
-            audio_chunk = np.array(audio_chunk, dtype=np.float32)
+            audio_chunk = np.array(audio_chunk)
+        
+        logger.debug(f'Audio chunk shape: {audio_chunk.shape}, type: {audio_chunk.dtype}')
         
         # Process the audio chunk
-        text = transcription_service.transcribe_chunk(audio_chunk, sample_rate=sample_rate)
+        transcription_result = transcription_service.transcribe_chunk(audio_chunk)
         
-        if text:
-            logger.debug(f"Transcribed text: {text}")
-            
-            # Extract action items
-            action_items = nlp_service.extract_action_items(text)
-            logger.debug(f"Extracted action items: {action_items}")
-            
-            # Update in-memory storage
-            if meeting_id in meetings:
-                meetings[meeting_id]['transcription'] += text + ' '
-                if action_items:
-                    meetings[meeting_id]['action_items'].extend(action_items)
-                
-                # Generate interim summary if we have enough text
-                if len(meetings[meeting_id]['transcription'].split()) > 50:  # After 50 words
-                    interim_summary = nlp_service.generate_summary(meetings[meeting_id]['transcription'])
-                    meetings[meeting_id]['summary'] = interim_summary
-                    
-                    # Emit the results back to the client with structured summary
-                    emit('transcription_update', {
-                        'text': text,
-                        'action_items': action_items,
-                        'summary': {
-                            'main_summary': interim_summary.get('summary', interim_summary) if isinstance(interim_summary, dict) else interim_summary,
-                            'topic_summaries': interim_summary.get('topic_summaries', []) if isinstance(interim_summary, dict) else [],
-                            'key_points': interim_summary.get('key_points', []) if isinstance(interim_summary, dict) else []
-                        }
-                    })
-                else:
-                    # Emit just the transcription and action items
-                    emit('transcription_update', {
-                        'text': text,
-                        'action_items': action_items
-                    })
-                
-                logger.debug(f"Updated meeting {meeting_id} with new content")
-            
+        if not transcription_result:
+            logger.debug('No transcription result')
+            return
+        
+        logger.info(f'Transcription result: {transcription_result}')
+        
+        # Extract action items
+        action_items = nlp_service.extract_action_items(transcription_result)
+        logger.info(f'Extracted action items: {action_items}')
+        
+        # Update in-memory storage
+        if meeting_id not in meetings:
+            meetings[meeting_id] = {
+                'transcription': '',
+                'action_items': [],
+                'summary': ''
+            }
+        
+        # Update transcription
+        meetings[meeting_id]['transcription'] += ' ' + transcription_result
+        meetings[meeting_id]['action_items'].extend(action_items)
+        
+        # Generate interim summary if we have enough text
+        if len(meetings[meeting_id]['transcription'].split()) > 50:
+            summary = nlp_service.generate_summary(meetings[meeting_id]['transcription'])
+            meetings[meeting_id]['summary'] = summary
+            logger.info(f'Generated summary: {summary}')
+        else:
+            summary = None
+            logger.debug('Not enough text for summary generation')
+        
+        # Emit the update back to the client with the correct data structure
+        update_data = {
+            'transcription': transcription_result,  # Changed from 'text' to 'transcription'
+            'action_items': action_items,
+            'summary': summary
+        }
+        
+        logger.info(f'Emitting transcription update: {update_data}')
+        socketio.emit('transcription_update', update_data)
+        
     except Exception as e:
-        logger.error(f"Error processing audio chunk: {str(e)}", exc_info=True)
-        emit('transcription_error', {'error': str(e)})
+        logger.error(f'Error processing audio chunk: {str(e)}')
+        logger.error(f'Stack trace: {traceback.format_exc()}')
+        socketio.emit('transcription_error', {'error': str(e)})
 
 def process_audio_file(filepath, meeting_id):
     """Process an uploaded audio file."""
@@ -230,15 +238,20 @@ def process_audio_file(filepath, meeting_id):
         transcription_chunks = [transcription[i:i+chunk_size] 
                               for i in range(0, len(transcription), chunk_size)]
         
+        # Send each chunk with proper data structure
         for i, chunk in enumerate(transcription_chunks):
-            socketio.emit('transcription_update', {
-                'text': chunk,
-                'is_final': i == len(transcription_chunks) - 1
-            })
-            time.sleep(0.1)  # Small delay between chunks
+            update_data = {
+                'transcription': chunk,  # Changed from 'text' to 'transcription'
+                'is_final': i == len(transcription_chunks) - 1,
+                'action_items': action_items if i == len(transcription_chunks) - 1 else [],
+                'summary': summary if i == len(transcription_chunks) - 1 else None
+            }
+            socketio.emit('transcription_update', update_data)
+            logger.info(f"Emitted chunk {i+1}/{len(transcription_chunks)}")
+            time.sleep(0.2)  # Increased delay between chunks to prevent disconnects
         
-        # Then send the complete data with structured summary
-        socketio.emit('processing_complete', {
+        # Send the final complete data
+        complete_data = {
             'meeting_id': meeting_id,
             'transcription': transcription,
             'summary': {
@@ -247,10 +260,13 @@ def process_audio_file(filepath, meeting_id):
                 'key_points': summary.get('key_points', []) if isinstance(summary, dict) else []
             },
             'action_items': action_items
-        })
+        }
+        logger.info(f"Emitting complete data")
+        socketio.emit('processing_complete', complete_data)
         
     except Exception as e:
-        logger.error(f"Error processing audio file: {str(e)}", exc_info=True)
+        logger.error(f"Error processing audio file: {str(e)}")
+        logger.error(f"Stack trace: {traceback.format_exc()}")
         if meeting_id in meetings:
             meetings[meeting_id].update({
                 'status': 'error',

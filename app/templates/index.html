@@ -19,6 +19,16 @@
                 opacity: .5;
             }
         }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
         .gradient-border {
             position: relative;
             border-radius: 0.5rem;
@@ -42,6 +52,87 @@
         }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
             background: #555;
+        }
+        #transcription-container {
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        
+        .transcription-entry {
+            padding: 8px;
+            margin-bottom: 8px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        #action-items-container {
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        
+        .action-item {
+            padding: 8px;
+            margin-bottom: 8px;
+            background-color: #fff;
+            border-left: 4px solid #007bff;
+            border-radius: 4px;
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        .action-item-content {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .priority {
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            text-transform: uppercase;
+        }
+        
+        .priority.high {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .priority.medium {
+            background-color: #ffc107;
+            color: black;
+        }
+        
+        .priority.low {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        #summary-container {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        
+        .summary-entry {
+            padding: 8px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
@@ -104,7 +195,7 @@
                     <i class="fas fa-comment-alt text-2xl text-gray-700 mr-3"></i>
                     <h2 class="text-2xl font-semibold text-gray-800">Live Transcription</h2>
                 </div>
-                <div id="transcription" class="h-96 overflow-y-auto p-4 bg-gray-50 rounded-lg custom-scrollbar">
+                <div id="transcription-container" class="h-96 overflow-y-auto p-4 bg-gray-50 rounded-lg custom-scrollbar">
                     <p class="text-gray-500 italic text-center py-8">Transcription will appear here...</p>
                 </div>
                 <div id="recordingStatus" class="hidden mt-4 text-center space-y-2">
@@ -125,7 +216,7 @@
                     <i class="fas fa-tasks text-2xl text-gray-700 mr-3"></i>
                     <h2 class="text-2xl font-semibold text-gray-800">Action Items</h2>
                 </div>
-                <div id="actionItems" class="space-y-4 max-h-96 overflow-y-auto custom-scrollbar">
+                <div id="action-items-container" class="space-y-4 max-h-96 overflow-y-auto custom-scrollbar">
                     <p class="text-gray-500 italic text-center py-8">Action items will appear here...</p>
                 </div>
             </div>
@@ -136,7 +227,7 @@
                     <i class="fas fa-file-alt text-2xl text-gray-700 mr-3"></i>
                     <h2 class="text-2xl font-semibold text-gray-800">Meeting Summary</h2>
                 </div>
-                <div id="summary" class="p-4 bg-gray-50 rounded-lg max-h-96 overflow-y-auto custom-scrollbar">
+                <div id="summary-container" class="p-4 bg-gray-50 rounded-lg max-h-96 overflow-y-auto custom-scrollbar">
                     <p class="text-gray-500 italic text-center py-8">Summary will appear when the meeting ends...</p>
                 </div>
             </div>
@@ -185,66 +276,139 @@
             socket = io({
                 path: '/socket.io',
                 transports: ['websocket', 'polling'],
-                port: 8081,
-                reconnectionAttempts: 5,
-                reconnectionDelay: 1000
+                reconnectionAttempts: 10,
+                reconnectionDelay: 1000,
+                reconnectionDelayMax: 5000,
+                timeout: 60000,
+                pingTimeout: 30000,
+                pingInterval: 25000,
+                logger: true,
+                debug: true
             });
-        } catch (error) {
-            console.error('Error initializing Socket.IO:', error);
-            showToast('Error connecting to server: ' + error.message, 'error');
-        }
-
-        // Socket event handlers
-        if (socket) {
+            
+            // Add connection status logging
             socket.on('connect', () => {
-                debugLog('Socket.IO connected');
+                debugLog('Socket.IO connected successfully');
+                console.log('Socket.IO connected with ID:', socket.id);
                 showToast('Connected to server', 'success');
+                
+                // Update UI to show connected status
+                const statusIndicator = document.createElement('div');
+                statusIndicator.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg';
+                statusIndicator.textContent = 'Connected to server';
+                document.body.appendChild(statusIndicator);
+                
+                setTimeout(() => {
+                    statusIndicator.remove();
+                }, 3000);
             });
 
             socket.on('connect_error', (error) => {
                 debugLog('Socket.IO connection error:', error);
+                console.error('Socket.IO connection error:', error);
                 showToast('Connection error: ' + error.message, 'error');
             });
 
-            socket.on('transcription_update', (data) => {
-                try {
-                    debugLog('Received transcription update', data);
-                    
-                    // Update transcription
-                    if (data.text) {
-                        debugLog('Updating transcription with text:', data.text);
-                        if (transcriptionDiv.querySelector('.text-gray-500')) {
-                            transcriptionDiv.innerHTML = ''; // Clear placeholder
-                        }
-                        const p = document.createElement('p');
-                        p.className = 'mb-2 text-gray-700';
-                        p.textContent = data.text;
-                        transcriptionDiv.appendChild(p);
-                        transcriptionDiv.scrollTop = transcriptionDiv.scrollHeight;
-                    }
-                    
-                    // Update action items
-                    if (data.action_items && data.action_items.length > 0) {
-                        debugLog('Updating action items:', data.action_items);
-                        if (actionItemsDiv.querySelector('.text-gray-500')) {
-                            actionItemsDiv.innerHTML = ''; // Clear placeholder
-                        }
-                        data.action_items.forEach(item => {
-                            const actionItem = createActionItemElement(item);
-                            actionItemsDiv.appendChild(actionItem);
-                        });
-                        actionItemsDiv.scrollTop = actionItemsDiv.scrollHeight;
-                    }
+            socket.on('disconnect', (reason) => {
+                debugLog('Socket.IO disconnected:', reason);
+                console.log('Socket.IO disconnected:', reason);
+                showToast('Disconnected from server: ' + reason, 'error');
+                
+                // Update UI to show disconnected status
+                const statusIndicator = document.createElement('div');
+                statusIndicator.className = 'fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg';
+                statusIndicator.textContent = 'Disconnected from server';
+                document.body.appendChild(statusIndicator);
+                
+                setTimeout(() => {
+                    statusIndicator.remove();
+                }, 3000);
+            });
 
-                    // Update summary if available
-                    if (data.summary) {
-                        debugLog('Updating summary:', data.summary);
-                        updateSummaryDisplay(data.summary);
-                    }
-                } catch (error) {
-                    debugLog('Error handling transcription update:', error);
-                    showToast('Error updating display: ' + error.message, 'error');
+            socket.on('transcription_update', function(data) {
+                console.log('Received transcription update:', data);
+                debugLog('Received transcription update:', data);
+                
+                if (!data) {
+                    console.error('No data received in transcription update');
+                    debugLog('No data received in transcription update');
+                    return;
                 }
+                
+                // Get the transcription container
+                const transcriptionContainer = document.getElementById('transcription-container');
+                if (!transcriptionContainer) {
+                    console.error('Transcription container not found');
+                    debugLog('Transcription container not found');
+                    return;
+                }
+                
+                // Create new transcription entry
+                if (data.transcription && data.transcription.trim()) {
+                    debugLog('Adding new transcription entry:', data.transcription);
+                    
+                    const newTranscription = document.createElement('div');
+                    newTranscription.className = 'transcription-entry bg-white p-3 rounded-lg shadow-sm mb-2 animate-fade-in';
+                    newTranscription.textContent = data.transcription;
+                    
+                    // Add timestamp
+                    const timestamp = document.createElement('div');
+                    timestamp.className = 'text-xs text-gray-500 mt-1';
+                    timestamp.textContent = new Date().toLocaleTimeString();
+                    newTranscription.appendChild(timestamp);
+                    
+                    transcriptionContainer.appendChild(newTranscription);
+                    
+                    // Scroll to bottom
+                    transcriptionContainer.scrollTop = transcriptionContainer.scrollHeight;
+                    
+                    // Flash the background briefly to indicate new content
+                    newTranscription.style.backgroundColor = '#e3f2fd';
+                    setTimeout(() => {
+                        newTranscription.style.backgroundColor = 'white';
+                    }, 500);
+                } else {
+                    debugLog('No transcription text in update data');
+                }
+                
+                // Update action items if present
+                if (data.action_items && data.action_items.length > 0) {
+                    debugLog('Updating action items:', data.action_items);
+                    const actionItemsContainer = document.getElementById('action-items-container');
+                    if (actionItemsContainer) {
+                        data.action_items.forEach(item => {
+                            const actionItem = document.createElement('div');
+                            actionItem.className = 'action-item';
+                            actionItem.innerHTML = `
+                                <div class="action-item-content">
+                                    <span class="action-text">${item.text}</span>
+                                    ${item.assignee ? `<span class="assignee">Assigned to: ${item.assignee}</span>` : ''}
+                                    ${item.deadline ? `<span class="deadline">Due: ${item.deadline}</span>` : ''}
+                                    <span class="priority ${item.priority}">${item.priority}</span>
+                                </div>
+                            `;
+                            actionItemsContainer.appendChild(actionItem);
+                        });
+                    }
+                }
+                
+                // Update summary if present
+                if (data.summary) {
+                    debugLog('Updating summary:', data.summary);
+                    const summaryContainer = document.getElementById('summary-container');
+                    if (summaryContainer) {
+                        const summaryElement = document.createElement('div');
+                        summaryElement.className = 'summary-entry';
+                        summaryElement.textContent = data.summary;
+                        summaryContainer.innerHTML = ''; // Clear previous summary
+                        summaryContainer.appendChild(summaryElement);
+                    }
+                }
+            });
+
+            socket.on('transcription_error', function(error) {
+                console.error('Transcription error:', error);
+                showToast('Error processing audio: ' + error.message, 'error');
             });
 
             socket.on('processing_complete', (data) => {
@@ -290,6 +454,9 @@
                 debugLog('Processing error:', data);
                 showToast('Error: ' + data.error, 'error');
             });
+        } catch (error) {
+            console.error('Error initializing Socket.IO:', error);
+            showToast('Error connecting to server: ' + error.message, 'error');
         }
 
         let currentMeetingId = null;
@@ -303,9 +470,9 @@
         // DOM Elements
         const startButton = document.getElementById('startRecording');
         const stopButton = document.getElementById('stopRecording');
-        const transcriptionDiv = document.getElementById('transcription');
-        const actionItemsDiv = document.getElementById('actionItems');
-        const summaryDiv = document.getElementById('summary');
+        const transcriptionDiv = document.getElementById('transcription-container');
+        const actionItemsDiv = document.getElementById('action-items-container');
+        const summaryDiv = document.getElementById('summary-container');
         const uploadForm = document.getElementById('uploadForm');
         const recordingStatus = document.getElementById('recordingStatus');
         const audioFileInput = document.getElementById('audioFile');
@@ -317,14 +484,14 @@
                 this.audioContext = null;
                 this.analyser = null;
                 this.gainNode = null;
-                this.noiseThreshold = -45; // Stricter noise threshold
-                this.silenceThreshold = -60; // Adjusted silence threshold
+                this.noiseThreshold = -50; // Adjusted for better noise detection
+                this.silenceThreshold = -65; // Adjusted for better silence detection
                 this.consecutiveNoiseFrames = 0;
-                this.maxNoiseFrames = 5; // Reduced for faster noise detection
-                this.denoisingStrength = 0.75; // Strength of noise reduction (0-1)
+                this.maxNoiseFrames = 3; // Reduced for faster noise detection
+                this.denoisingStrength = 0.85; // Increased noise reduction strength
                 this.speechFreqRange = {
-                    low: 300,  // Focused more on human voice range
-                    high: 3000 // Narrowed band for clearer speech
+                    low: 85,   // Lowered to capture more of the human voice range
+                    high: 4000 // Increased to capture more speech frequencies
                 };
             }
 
@@ -334,38 +501,38 @@
                 
                 // Create nodes for audio processing
                 this.analyser = this.audioContext.createAnalyser();
-                this.analyser.fftSize = 4096; // Increased for better frequency resolution
-                this.analyser.smoothingTimeConstant = 0.9; // Smoother frequency analysis
+                this.analyser.fftSize = 8192; // Increased for better frequency resolution
+                this.analyser.smoothingTimeConstant = 0.8; // Adjusted for smoother analysis
                 
-                // Create compressor to handle dynamic range
+                // Create compressor with improved settings
                 this.compressor = this.audioContext.createDynamicsCompressor();
-                this.compressor.threshold.value = -50;
-                this.compressor.knee.value = 40;
-                this.compressor.ratio.value = 12;
-                this.compressor.attack.value = 0.02;
-                this.compressor.release.value = 0.3;
+                this.compressor.threshold.value = -45; // Adjusted threshold
+                this.compressor.knee.value = 30; // Softer knee
+                this.compressor.ratio.value = 8; // Reduced ratio for more natural sound
+                this.compressor.attack.value = 0.01; // Faster attack
+                this.compressor.release.value = 0.25; // Faster release
 
                 // Create and configure filters
                 this.preHighPass = this.audioContext.createBiquadFilter();
                 this.preHighPass.type = 'highpass';
-                this.preHighPass.frequency.value = 80;
+                this.preHighPass.frequency.value = 60; // Lowered to preserve more voice frequencies
                 this.preHighPass.Q.value = 0.7;
 
                 // Multiple band-pass filters for voice frequencies
                 this.bandpass1 = this.audioContext.createBiquadFilter();
                 this.bandpass1.type = 'bandpass';
-                this.bandpass1.frequency.value = 500;
-                this.bandpass1.Q.value = 0.5;
+                this.bandpass1.frequency.value = 300;
+                this.bandpass1.Q.value = 0.7;
 
                 this.bandpass2 = this.audioContext.createBiquadFilter();
                 this.bandpass2.type = 'bandpass';
                 this.bandpass2.frequency.value = 1000;
-                this.bandpass2.Q.value = 0.5;
+                this.bandpass2.Q.value = 0.7;
 
                 this.bandpass3 = this.audioContext.createBiquadFilter();
                 this.bandpass3.type = 'bandpass';
                 this.bandpass3.frequency.value = 2000;
-                this.bandpass3.Q.value = 0.5;
+                this.bandpass3.Q.value = 0.7;
 
                 // Low-pass filter for final smoothing
                 this.lowpass = this.audioContext.createBiquadFilter();
@@ -375,7 +542,7 @@
 
                 // Gain node for final volume adjustment
                 this.gainNode = this.audioContext.createGain();
-                this.gainNode.gain.value = 1.3; // Slightly increased gain
+                this.gainNode.gain.value = 1.5; // Increased gain for better volume
 
                 // Connect the audio processing chain
                 source
@@ -420,7 +587,7 @@
                 // Calculate signal-to-noise ratio
                 const snr = average - noiseLevel;
                 
-                if (snr < -15) { // High noise relative to speech
+                if (snr < -20) { // Adjusted threshold for better noise detection
                     this.consecutiveNoiseFrames++;
                     if (this.consecutiveNoiseFrames >= this.maxNoiseFrames) {
                         return 'high_noise';
@@ -463,16 +630,18 @@
             adjustNoiseReduction(increaseReduction) {
                 if (increaseReduction) {
                     // Increase noise reduction when high noise is detected
-                    this.bandpass1.Q.value = Math.min(1.0, this.bandpass1.Q.value + 0.1);
-                    this.bandpass2.Q.value = Math.min(1.0, this.bandpass2.Q.value + 0.1);
-                    this.bandpass3.Q.value = Math.min(1.0, this.bandpass3.Q.value + 0.1);
-                    this.compressor.threshold.value = Math.max(-60, this.compressor.threshold.value - 2);
+                    this.bandpass1.Q.value = Math.min(1.2, this.bandpass1.Q.value + 0.1);
+                    this.bandpass2.Q.value = Math.min(1.2, this.bandpass2.Q.value + 0.1);
+                    this.bandpass3.Q.value = Math.min(1.2, this.bandpass3.Q.value + 0.1);
+                    this.compressor.threshold.value = Math.max(-55, this.compressor.threshold.value - 2);
+                    this.gainNode.gain.value = Math.max(1.0, this.gainNode.gain.value - 0.1);
                 } else {
                     // Decrease noise reduction when audio is clean
-                    this.bandpass1.Q.value = Math.max(0.5, this.bandpass1.Q.value - 0.05);
-                    this.bandpass2.Q.value = Math.max(0.5, this.bandpass2.Q.value - 0.05);
-                    this.bandpass3.Q.value = Math.max(0.5, this.bandpass3.Q.value - 0.05);
-                    this.compressor.threshold.value = Math.min(-50, this.compressor.threshold.value + 1);
+                    this.bandpass1.Q.value = Math.max(0.7, this.bandpass1.Q.value - 0.05);
+                    this.bandpass2.Q.value = Math.max(0.7, this.bandpass2.Q.value - 0.05);
+                    this.bandpass3.Q.value = Math.max(0.7, this.bandpass3.Q.value - 0.05);
+                    this.compressor.threshold.value = Math.min(-45, this.compressor.threshold.value + 1);
+                    this.gainNode.gain.value = Math.min(1.5, this.gainNode.gain.value + 0.05);
                 }
             }
         }
@@ -512,7 +681,35 @@
                                   location.hostname.includes('.local');
                 
                 if (!isLocalhost && location.protocol !== 'https:') {
-                    throw new Error('MediaDevices API requires HTTPS or localhost');
+                    const errorMessage = 'This application requires a secure connection (HTTPS) or must be run on localhost. ' +
+                                       'Please either:\n\n' +
+                                       '1. Run the application on localhost (http://localhost:8081)\n' +
+                                       '2. Use HTTPS for your connection\n\n' +
+                                       'Current URL: ' + window.location.href;
+                    
+                    console.error(errorMessage);
+                    showToast(errorMessage, 'error');
+                    
+                    // Create a more visible error message
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'fixed top-0 left-0 right-0 bg-red-500 text-white p-4 text-center z-50';
+                    errorDiv.innerHTML = `
+                        <div class="max-w-2xl mx-auto">
+                            <h3 class="text-lg font-bold mb-2">Connection Error</h3>
+                            <p class="mb-2">${errorMessage}</p>
+                            <button onclick="window.location.href='http://localhost:8081'" 
+                                    class="bg-white text-red-500 px-4 py-2 rounded hover:bg-gray-100">
+                                Switch to localhost
+                            </button>
+                        </div>
+                    `;
+                    document.body.appendChild(errorDiv);
+                    
+                    // Disable recording controls
+                    startButton.disabled = true;
+                    stopButton.disabled = true;
+                    
+                    return false;
                 }
                 
                 // Ensure navigator.mediaDevices exists
@@ -528,7 +725,7 @@
                                           navigator.msGetUserMedia;
                         
                         if (!getUserMedia) {
-                            return Promise.reject(new Error('getUserMedia is not implemented in this browser'));
+                            throw new Error('getUserMedia is not implemented in this browser');
                         }
                         return new Promise((resolve, reject) => {
                             getUserMedia.call(navigator, constraints, resolve, reject);
@@ -537,13 +734,52 @@
                 }
                 
                 // Test the getUserMedia to ensure it works
-                await navigator.mediaDevices.getUserMedia({ audio: true });
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                stream.getTracks().forEach(track => track.stop()); // Stop the test stream
                 
                 mediaDevices = navigator.mediaDevices;
                 return true;
             } catch (err) {
                 console.error('Error initializing MediaDevices:', err);
-                showToast('Error initializing audio system: ' + err.message, 'error');
+                
+                let errorMessage = 'Error accessing microphone: ';
+                if (err.name === 'NotAllowedError') {
+                    errorMessage += 'Microphone access was denied. Please allow microphone access in your browser settings.';
+                } else if (err.name === 'NotFoundError') {
+                    errorMessage += 'No microphone found. Please connect a microphone and try again.';
+                } else if (err.name === 'NotReadableError') {
+                    errorMessage += 'Your microphone is busy or not working properly. Please check if it\'s being used by another application.';
+                } else {
+                    errorMessage += err.message;
+                }
+                
+                showToast(errorMessage, 'error');
+                
+                // Create a more visible error message
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'fixed top-0 left-0 right-0 bg-red-500 text-white p-4 text-center z-50';
+                errorDiv.innerHTML = `
+                    <div class="max-w-2xl mx-auto">
+                        <h3 class="text-lg font-bold mb-2">Microphone Error</h3>
+                        <p class="mb-2">${errorMessage}</p>
+                        <div class="space-x-4">
+                            <button onclick="window.location.reload()" 
+                                    class="bg-white text-red-500 px-4 py-2 rounded hover:bg-gray-100">
+                                Retry
+                            </button>
+                            <button onclick="this.parentElement.parentElement.parentElement.remove()" 
+                                    class="bg-white text-red-500 px-4 py-2 rounded hover:bg-gray-100">
+                                Dismiss
+                            </button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(errorDiv);
+                
+                // Disable recording controls
+                startButton.disabled = true;
+                stopButton.disabled = true;
+                
                 return false;
             }
         }
@@ -695,7 +931,7 @@
 
                 socket.emit('start_recording');
                 
-                mediaRecorder.start(1000);
+                mediaRecorder.start(500);  // Changed from 1000 to 500 milliseconds
                 startButton.disabled = true;
                 stopButton.disabled = false;
                 recordingStatus.classList.remove('hidden');
@@ -891,6 +1127,25 @@
             
             return div;
         }
+
+        // Add styles for the animation
+        const style = document.createElement('style');
+        style.textContent = `
+            .animate-fade-in {
+                animation: fadeIn 0.5s ease-in;
+            }
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(-10px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
 </html> 

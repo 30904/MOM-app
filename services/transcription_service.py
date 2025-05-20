@@ -20,7 +20,7 @@ class TranscriptionService:
             self.model = whisper.load_model(Config.WHISPER_MODEL)
             self.buffer = np.array([], dtype=np.float32)  # Add buffer for accumulating audio
             self.last_transcription_time = time.time()
-            self.min_chunk_duration = 2.0  # Minimum duration in seconds before processing
+            self.min_chunk_duration = 0.5  # Reduced from 2.0 to 0.5 seconds
             logger.info("Whisper model initialized successfully")
         except Exception as e:
             logger.error(f"Failed to initialize Whisper model: {str(e)}")
@@ -60,6 +60,7 @@ class TranscriptionService:
         try:
             current_time = time.time()
             logger.debug(f"Starting transcription of audio chunk, sample rate: {sample_rate}")
+            logger.debug(f"Audio data type: {type(audio_data)}, Shape: {getattr(audio_data, 'shape', 'N/A')}")
             
             # Handle different input types
             if isinstance(audio_data, (bytes, bytearray, memoryview)):
@@ -75,11 +76,14 @@ class TranscriptionService:
                 logger.error(error_msg)
                 raise ValueError(error_msg)
             
+            logger.debug(f"Converted audio array shape: {audio_array.shape}, dtype: {audio_array.dtype}")
+            
             # Ensure we have a contiguous array in the correct format
             audio_array = np.ascontiguousarray(audio_array, dtype=np.float32)
             
             # Add to buffer
             self.buffer = np.concatenate([self.buffer, audio_array])
+            logger.debug(f"Buffer size after concatenation: {len(self.buffer)}")
             
             # Calculate buffer duration in seconds (assuming 16kHz sample rate)
             buffer_duration = len(self.buffer) / 16000
@@ -87,14 +91,15 @@ class TranscriptionService:
             
             logger.debug(f"Buffer duration: {buffer_duration}s, Time since last: {time_since_last}s")
             
-            # Only process if we have enough audio data
-            if buffer_duration >= self.min_chunk_duration and time_since_last >= 1.0:
+            # Only process if we have enough audio data and enough time has passed
+            if buffer_duration >= self.min_chunk_duration and time_since_last >= 0.5:  # Reduced from 1.0 to 0.5
                 logger.debug("Processing accumulated audio buffer")
                 
                 # Normalize buffer
                 max_val = np.max(np.abs(self.buffer))
                 if max_val > 1.0:
                     self.buffer = self.buffer / max_val
+                    logger.debug(f"Normalized buffer, max value: {max_val}")
                 
                 # Resample if needed (Whisper expects 16kHz)
                 if sample_rate and sample_rate != 16000:
@@ -102,9 +107,12 @@ class TranscriptionService:
                     from scipy import signal
                     self.buffer = signal.resample(self.buffer, 
                                                 int(len(self.buffer) * 16000 / sample_rate))
+                    logger.debug(f"Resampled buffer size: {len(self.buffer)}")
                 
                 # Transcribe the buffer
+                logger.debug("Calling Whisper model for transcription")
                 result = self.model.transcribe(self.buffer)
+                logger.debug(f"Whisper result: {result}")
                 
                 # Clear the buffer and update last transcription time
                 self.buffer = np.array([], dtype=np.float32)
@@ -113,6 +121,10 @@ class TranscriptionService:
                 if result and "text" in result and result["text"].strip():
                     logger.info(f"Transcribed text: {result['text']}")
                     return result["text"]
+                else:
+                    logger.debug("No text in Whisper result or empty text")
+            else:
+                logger.debug(f"Not enough audio data yet. Buffer duration: {buffer_duration}s, Min required: {self.min_chunk_duration}s")
             
             return None
             

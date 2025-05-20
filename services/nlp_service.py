@@ -12,6 +12,7 @@ from nltk.corpus import stopwords
 import torch
 from typing import List, Dict, Optional, Tuple
 import numpy as np
+import traceback
 
 # Download required NLTK data
 try:
@@ -236,9 +237,12 @@ class NLPService:
     def generate_summary(self, text: str, meeting_id: Optional[str] = None) -> Dict:
         """Generate a comprehensive summary of the meeting transcript."""
         try:
+            logger.info(f"Generating summary for text: {text[:100]}...")
+            
             # Preprocess the text
             cleaned_text = self.preprocess_text(text)
             word_count = len(cleaned_text.split())
+            logger.debug(f"Preprocessed text word count: {word_count}")
             
             # If text is too short, return as is
             if word_count < 50:
@@ -254,14 +258,16 @@ class NLPService:
             # Split text into topics
             sentences = sent_tokenize(cleaned_text)
             topic_segments = self.topic_segmenter.segment(sentences)
+            logger.debug(f"Split text into {len(topic_segments)} topic segments")
             
             # Generate summary for each topic
             topic_summaries = []
-            for segment in topic_segments:
+            for i, segment in enumerate(topic_segments):
                 segment_text = ' '.join(segment)
                 segment_length = len(segment_text.split())
                 min_length, max_length = self._calculate_summary_length(segment_length)
                 
+                logger.debug(f"Generating summary for topic {i+1}, length: {segment_length} words")
                 summary = self.summarizer(
                     segment_text,
                     max_length=max_length,
@@ -276,6 +282,8 @@ class NLPService:
             
             # Generate overall summary
             min_length, max_length = self._calculate_summary_length(word_count)
+            logger.debug(f"Generating overall summary, target length: {min_length}-{max_length} words")
+            
             overall_summary = self.summarizer(
                 cleaned_text,
                 max_length=max_length,
@@ -289,6 +297,7 @@ class NLPService:
             
             # Extract key points
             key_points = self._extract_key_points(cleaned_text)
+            logger.debug(f"Extracted {len(key_points)} key points")
             
             result = {
                 "summary": self.postprocess_summary(overall_summary),
@@ -296,15 +305,15 @@ class NLPService:
                 "key_points": key_points
             }
             
-            # Log the summary
+            logger.info(f"Generated summary with {len(topic_summaries)} topics and {len(key_points)} key points")
             self._log_summary(result, meeting_id, word_count)
-            
             return result
             
         except Exception as e:
             logger.error(f"Error generating summary: {str(e)}")
+            logger.error(f"Traceback: {traceback.format_exc()}")
             return {
-                "summary": "Error generating summary. Please try again.",
+                "summary": "Error generating summary",
                 "topic_summaries": [],
                 "key_points": []
             }
@@ -371,79 +380,61 @@ class NLPService:
             logger.error(f"Error post-processing summary: {str(e)}")
             return summary
     
-    def extract_action_items(self, text: str, meeting_id: Optional[str] = None) -> List[Dict]:
-        """Extract action items from the text with enhanced metadata."""
+    def extract_action_items(self, text: str) -> List[Dict]:
+        """Extract action items from text."""
         try:
-            doc = self.nlp(text)
-            action_items = []
-            seen_actions = set()
+            logger.info(f"Extracting action items from text: {text[:100]}...")
             
-            # Extract using patterns
-            for pattern in self.action_patterns:
-                matches = re.finditer(pattern, text)
-                for match in matches:
-                    match_dict = match.groupdict()
+            # Preprocess text
+            cleaned_text = self.preprocess_text(text)
+            logger.debug(f"Preprocessed text: {cleaned_text[:100]}...")
+            
+            # Split into sentences
+            sentences = sent_tokenize(cleaned_text)
+            logger.debug(f"Split into {len(sentences)} sentences")
+            
+            action_items = []
+            for sentence in sentences:
+                # Check for action item patterns
+                if any(pattern in sentence.lower() for pattern in ['todo', 'task', 'action', 'need to', 'should', 'must']):
+                    logger.debug(f"Found potential action item: {sentence}")
                     
-                    # Get action text
-                    action_text = match_dict.get('action', match.group(0))
-                    action_text = action_text.strip()
+                    # Extract priority
+                    priority = 'medium'
+                    if any(word in sentence.lower() for word in ['urgent', 'asap', 'critical']):
+                        priority = 'high'
+                    elif any(word in sentence.lower() for word in ['low', 'when possible']):
+                        priority = 'low'
                     
-                    # Skip if too short or already seen
-                    if len(action_text.split()) < 3 or action_text.lower() in seen_actions:
-                        continue
+                    # Extract assignee if present
+                    assignee = None
+                    assignee_match = re.search(r'(?:assigned to|for|by)\s+([A-Za-z\s]+)', sentence)
+                    if assignee_match:
+                        assignee = assignee_match.group(1).strip()
                     
-                    # Extract metadata
-                    action_doc = self.nlp(action_text)
+                    # Extract deadline if present
+                    deadline = None
+                    deadline_match = re.search(r'(?:by|due|deadline|on)\s+([A-Za-z0-9\s,]+)', sentence)
+                    if deadline_match:
+                        deadline = deadline_match.group(1).strip()
                     
-                    # Get assignee
-                    assignee = match_dict.get('assignee')
-                    if not assignee:
-                        for ent in action_doc.ents:
-                            if ent.label_ == "PERSON":
-                                assignee = ent.text
-                                break
-                    
-                    # Get deadline
-                    deadline = match_dict.get('deadline')
-                    if not deadline:
-                        for ent in action_doc.ents:
-                            if ent.label_ in ["DATE", "TIME"]:
-                                deadline = ent.text
-                                break
-                    
-                    # Determine priority
-                    priority = self.priority_classifier.classify(action_text)
-                    
-                    # Extract dependencies
-                    dependencies = self._extract_dependencies(action_text)
-                    
-                    # Create action item
                     action_item = {
-                        "text": action_text,
-                        "assignee": assignee,
-                        "deadline": deadline,
-                        "priority": priority,
-                        "dependencies": dependencies,
-                        "status": "pending",
-                        "context": self._extract_context(text, action_text),
-                        "created_at": datetime.now().isoformat()
+                        'text': sentence,
+                        'priority': priority,
+                        'assignee': assignee,
+                        'deadline': deadline,
+                        'context': text[:200]  # Include some context
                     }
                     
+                    logger.info(f"Created action item: {action_item}")
                     action_items.append(action_item)
-                    seen_actions.add(action_text.lower())
-            
-            # Sort by priority
-            priority_order = {'high': 0, 'medium': 1, 'low': 2}
-            action_items.sort(key=lambda x: priority_order[x['priority']])
-            
-            # Log action items
-            self._log_action_items(action_items, meeting_id)
             
             logger.info(f"Extracted {len(action_items)} action items")
             return action_items
             
         except Exception as e:
             logger.error(f"Error extracting action items: {str(e)}")
+            logger.error(f"Traceback: {traceback.format_exc()}")
             return []
     
     def _extract_dependencies(self, action_text: str) -> List[str]:
