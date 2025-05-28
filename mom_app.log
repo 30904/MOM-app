@@ -1,0 +1,996 @@
+2025-05-18 15:43:29,158 - services.transcription_service - INFO - Initializing Whisper model with configuration: base
+2025-05-18 15:43:30,345 - services.transcription_service - INFO - Whisper model initialized successfully
+2025-05-18 15:43:34,109 - services.nlp_service - INFO - Summarization model loaded successfully. Using device: cpu
+2025-05-18 15:43:34,110 - __main__ - INFO - Application initialized successfully
+2025-05-18 15:43:34,110 - __main__ - INFO - Starting application server...
+2025-05-18 15:43:34,974 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8081
+ * Running on http://192.168.0.146:8081
+2025-05-18 15:43:34,975 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-05-18 15:43:34,975 - werkzeug - INFO -  * Restarting with stat
+2025-05-18 15:43:40,808 - services.transcription_service - INFO - Initializing Whisper model with configuration: base
+2025-05-18 15:43:41,983 - services.transcription_service - INFO - Whisper model initialized successfully
+2025-05-18 15:43:45,541 - services.nlp_service - INFO - Summarization model loaded successfully. Using device: cpu
+2025-05-18 15:43:45,543 - __main__ - INFO - Application initialized successfully
+2025-05-18 15:43:45,544 - __main__ - INFO - Starting application server...
+2025-05-18 15:43:45,549 - werkzeug - WARNING -  * Debugger is active!
+2025-05-18 15:43:45,582 - werkzeug - INFO -  * Debugger PIN: 884-765-872
+2025-05-18 15:43:45,962 - werkzeug - INFO - 127.0.0.1 - - [18/May/2025 15:43:45] "GET / HTTP/1.1" 200 -
+2025-05-18 15:43:46,190 - __main__ - INFO - Client connected. Active connections: 1
+2025-05-18 15:43:46,365 - werkzeug - INFO - 127.0.0.1 - - [18/May/2025 15:43:46] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-05-18 15:43:47,930 - app.routes - ERROR - Error starting recording: AudioService.start_recording() takes 1 positional argument but 2 were given
+Traceback (most recent call last):
+  File "c:\Users\Srinivasa Dixit\MOM\app\routes.py", line 92, in handle_recording_start
+    audio_service.start_recording(meeting_id)
+TypeError: AudioService.start_recording() takes 1 positional argument but 2 were given
+2025-05-18 15:43:57,240 - app.routes - ERROR - Error stopping recording: No meeting_id provided
+Traceback (most recent call last):
+  File "c:\Users\Srinivasa Dixit\MOM\app\routes.py", line 105, in handle_recording_stop
+    raise ValueError("No meeting_id provided")
+ValueError: No meeting_id provided
+2025-05-18 15:45:17,900 - werkzeug - INFO -  * Detected change in 'c:\\Users\\Srinivasa Dixit\\MOM\\services\\audio_service.py', reloading
+2025-05-18 15:45:18,671 - werkzeug - INFO -  * Restarting with stat
+2025-05-18 15:45:22,280 - __main__ - INFO - Received signal SIGINT. Initiating graceful shutdown...
+2025-05-18 15:45:22,280 - __main__ - INFO - Initiating application shutdown...
+2025-05-18 15:45:22,281 - __main__ - INFO - Cleaning up application resources...
+2025-05-18 15:45:22,281 - __main__ - ERROR - Error cleaning up audio service: name 'contextlib' is not defined
+2025-05-18 15:45:32,225 - services.transcription_service - INFO - Initializing Whisper model with configuration: base
+2025-05-18 15:45:33,262 - services.transcription_service - INFO - Whisper model initialized successfully
+2025-05-18 15:45:35,834 - services.nlp_service - INFO - Summarization model loaded successfully. Using device: cpu
+2025-05-18 15:45:35,835 - __main__ - INFO - Application initialized successfully
+2025-05-18 15:45:35,836 - __main__ - INFO - Starting application server...
+2025-05-18 15:45:36,693 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8081
+ * Running on http://192.168.0.146:8081
+2025-05-18 15:45:36,694 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-05-18 15:45:36,695 - werkzeug - INFO -  * Restarting with stat
+2025-05-18 15:45:42,278 - services.transcription_service - INFO - Initializing Whisper model with configuration: base
+2025-05-18 15:45:43,226 - services.transcription_service - INFO - Whisper model initialized successfully
+2025-05-18 15:45:45,697 - services.nlp_service - INFO - Summarization model loaded successfully. Using device: cpu
+2025-05-18 15:45:45,699 - __main__ - INFO - Application initialized successfully
+2025-05-18 15:45:45,699 - __main__ - INFO - Starting application server...
+2025-05-18 15:45:45,703 - werkzeug - WARNING -  * Debugger is active!
+2025-05-18 15:45:45,710 - werkzeug - INFO -  * Debugger PIN: 884-765-872
+2025-05-18 15:45:45,929 - __main__ - INFO - Client connected. Active connections: 1
+2025-05-18 15:45:57,965 - werkzeug - INFO - 127.0.0.1 - - [18/May/2025 15:45:57] "GET / HTTP/1.1" 200 -
+2025-05-18 15:45:58,503 - __main__ - INFO - Client connected. Active connections: 2
+2025-05-18 15:46:00,756 - __main__ - INFO - Client disconnected. Active connections: 1
+2025-05-18 15:46:00,769 - werkzeug - INFO - 127.0.0.1 - - [18/May/2025 15:46:00] "[35m[1mGET /socket.io/?EIO=4&transport=websocket HTTP/1.1[0m" 500 -
+2025-05-18 15:46:00,773 - werkzeug - ERROR - Error on request:
+Traceback (most recent call last):
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\werkzeug\serving.py", line 370, in run_wsgi
+    execute(self.server.app)
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\werkzeug\serving.py", line 336, in execute
+    write(b"")
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\werkzeug\serving.py", line 261, in write
+    assert status_set is not None, "write() before start_response"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: write() before start_response
+2025-05-18 15:46:02,428 - app.routes - ERROR - Error starting recording: AudioService.start_recording() takes 1 positional argument but 2 were given
+Traceback (most recent call last):
+  File "c:\Users\Srinivasa Dixit\MOM\app\routes.py", line 92, in handle_recording_start
+    audio_service.start_recording(meeting_id)
+TypeError: AudioService.start_recording() takes 1 positional argument but 2 were given
+2025-05-18 15:46:15,677 - app.routes - ERROR - Error stopping recording: No meeting_id provided
+Traceback (most recent call last):
+  File "c:\Users\Srinivasa Dixit\MOM\app\routes.py", line 105, in handle_recording_stop
+    raise ValueError("No meeting_id provided")
+ValueError: No meeting_id provided
+2025-05-18 15:46:47,967 - werkzeug - INFO -  * Detected change in 'c:\\Users\\Srinivasa Dixit\\MOM\\services\\audio_service.py', reloading
+2025-05-18 15:46:48,701 - werkzeug - INFO -  * Restarting with stat
+2025-05-18 15:57:06,770 - __main__ - INFO - Received signal SIGINT. Initiating graceful shutdown...
+2025-05-18 15:57:06,771 - __main__ - INFO - Initiating application shutdown...
+2025-05-18 15:57:06,771 - __main__ - INFO - Cleaning up application resources...
+2025-05-18 15:57:06,772 - services.audio_service - INFO - Audio resources cleaned up.
+2025-05-18 15:57:06,772 - __main__ - INFO - Audio service cleaned up successfully
+2025-05-19 12:11:50,469 - __main__ - CRITICAL - Fatal error: AudioService.__init__() missing 1 required positional argument: 'config'
+2025-05-28 21:25:59,912 - services.audio_service - INFO - Initializing AudioService
+2025-05-28 21:26:01,100 - engineio.server - INFO - Server initialized for eventlet.
+2025-05-28 21:26:03,865 - services.audio_service - INFO - Initializing AudioService
+2025-05-28 21:26:03,865 - services.transcription_service - INFO - Initializing Whisper model with configuration: base
+2025-05-28 21:26:05,874 - services.transcription_service - INFO - Whisper model initialized successfully
+2025-05-28 21:26:05,875 - services.audio_service - INFO - Initializing AudioService
+2025-05-28 21:26:05,875 - services.nlp_service - INFO - Initializing NLPService
+2025-05-28 21:26:07,995 - services.nlp_service - INFO - Loaded forward translation model for hi
+2025-05-28 21:26:27,153 - services.nlp_service - INFO - Loaded reverse translation model for hi
+2025-05-28 21:26:29,286 - services.nlp_service - INFO - Loaded forward translation model for fr
+2025-05-28 21:26:29,851 - huggingface_hub.file_download - WARNING - Xet Storage is enabled for this repo, but the 'hf_xet' package is not installed. Falling back to regular HTTP download. For better performance, install the package with: `pip install huggingface_hub[hf_xet]` or `pip install hf_xet`
+2025-05-28 21:26:45,295 - services.nlp_service - INFO - Loaded reverse translation model for fr
+2025-05-28 21:26:47,525 - services.nlp_service - INFO - Loaded forward translation model for es
+2025-05-28 21:26:48,181 - huggingface_hub.file_download - WARNING - Xet Storage is enabled for this repo, but the 'hf_xet' package is not installed. Falling back to regular HTTP download. For better performance, install the package with: `pip install huggingface_hub[hf_xet]` or `pip install hf_xet`
+2025-05-28 21:27:05,209 - services.nlp_service - INFO - Loaded reverse translation model for es
+2025-05-28 21:27:07,403 - services.nlp_service - INFO - Loaded forward translation model for de
+2025-05-28 21:27:07,988 - huggingface_hub.file_download - WARNING - Xet Storage is enabled for this repo, but the 'hf_xet' package is not installed. Falling back to regular HTTP download. For better performance, install the package with: `pip install huggingface_hub[hf_xet]` or `pip install hf_xet`
+2025-05-28 21:27:26,444 - services.nlp_service - INFO - Loaded reverse translation model for de
+2025-05-28 21:27:28,809 - services.nlp_service - INFO - Loaded forward translation model for zh
+2025-05-28 21:27:45,451 - services.nlp_service - INFO - Loaded reverse translation model for zh
+2025-05-28 21:27:47,492 - services.nlp_service - INFO - Loaded forward translation model for ja
+2025-05-28 21:28:03,651 - services.nlp_service - INFO - Loaded reverse translation model for ja
+2025-05-28 21:28:03,757 - services.nlp_service - WARNING - Failed to load translation models for ko: Helsinki-NLP/opus-mt-en-kor is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `huggingface-cli login` or by passing `token=<your_token>`
+2025-05-28 21:28:06,282 - services.nlp_service - INFO - Loaded forward translation model for ar
+2025-05-28 21:28:21,322 - services.nlp_service - INFO - Loaded reverse translation model for ar
+2025-05-28 21:28:26,000 - services.nlp_service - INFO - Summarization model initialized successfully
+2025-05-28 21:28:26,615 - services.nlp_service - INFO - Initializing NLPService
+2025-05-28 21:28:28,957 - services.nlp_service - INFO - Loaded forward translation model for hi
+2025-05-28 21:28:31,337 - services.nlp_service - INFO - Loaded reverse translation model for hi
+2025-05-28 21:28:33,716 - services.nlp_service - INFO - Loaded forward translation model for fr
+2025-05-28 21:28:35,928 - services.nlp_service - INFO - Loaded reverse translation model for fr
+2025-05-28 21:28:38,174 - services.nlp_service - INFO - Loaded forward translation model for es
+2025-05-28 21:28:40,699 - services.nlp_service - INFO - Loaded reverse translation model for es
+2025-05-28 21:28:42,976 - services.nlp_service - INFO - Loaded forward translation model for de
+2025-05-28 21:28:45,362 - services.nlp_service - INFO - Loaded reverse translation model for de
+2025-05-28 21:28:47,629 - services.nlp_service - INFO - Loaded forward translation model for zh
+2025-05-28 21:28:49,801 - services.nlp_service - INFO - Loaded reverse translation model for zh
+2025-05-28 21:28:52,112 - services.nlp_service - INFO - Loaded forward translation model for ja
+2025-05-28 21:28:54,537 - services.nlp_service - INFO - Loaded reverse translation model for ja
+2025-05-28 21:28:54,651 - services.nlp_service - WARNING - Failed to load translation models for ko: Helsinki-NLP/opus-mt-en-kor is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `huggingface-cli login` or by passing `token=<your_token>`
+2025-05-28 21:28:57,183 - services.nlp_service - INFO - Loaded forward translation model for ar
+2025-05-28 21:29:00,015 - services.nlp_service - INFO - Loaded reverse translation model for ar
+2025-05-28 21:29:08,462 - services.nlp_service - ERROR - Failed to initialize summarization model: CUDA out of memory. Tried to allocate 20.00 MiB. GPU 0 has a total capacity of 4.00 GiB of which 0 bytes is free. Of the allocated memory 10.78 GiB is allocated by PyTorch, and 51.35 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+2025-05-28 21:29:08,465 - __main__ - ERROR - Failed to initialize application: CUDA out of memory. Tried to allocate 20.00 MiB. GPU 0 has a total capacity of 4.00 GiB of which 0 bytes is free. Of the allocated memory 10.78 GiB is allocated by PyTorch, and 51.35 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+2025-05-28 21:33:19,107 - services.audio_service - INFO - Initializing AudioService
+2025-05-28 21:33:20,983 - engineio.server - INFO - Server initialized for eventlet.
+2025-05-28 21:33:27,302 - services.audio_service - INFO - Initializing AudioService
+2025-05-28 21:33:27,303 - services.transcription_service - INFO - Initializing Whisper model with configuration: base
+2025-05-28 21:33:30,262 - services.transcription_service - INFO - Whisper model initialized successfully
+2025-05-28 21:33:30,263 - services.audio_service - INFO - Initializing AudioService
+2025-05-28 21:33:30,264 - services.nlp_service - INFO - Initializing NLPService
+2025-05-28 21:33:33,048 - services.nlp_service - INFO - Loaded forward translation model for hi
+2025-05-28 21:33:35,507 - services.nlp_service - INFO - Loaded reverse translation model for hi
+2025-05-28 21:33:37,941 - services.nlp_service - INFO - Loaded forward translation model for fr
+2025-05-28 21:33:40,385 - services.nlp_service - INFO - Loaded reverse translation model for fr
+2025-05-28 21:33:42,964 - services.nlp_service - INFO - Loaded forward translation model for es
+2025-05-28 21:33:45,587 - services.nlp_service - INFO - Loaded reverse translation model for es
+2025-05-28 21:33:48,263 - services.nlp_service - INFO - Loaded forward translation model for de
+2025-05-28 21:33:51,170 - services.nlp_service - INFO - Loaded reverse translation model for de
+2025-05-28 21:33:54,044 - services.nlp_service - INFO - Loaded forward translation model for zh
+2025-05-28 21:33:57,039 - services.nlp_service - INFO - Loaded reverse translation model for zh
+2025-05-28 21:33:59,635 - services.nlp_service - INFO - Loaded forward translation model for ja
+2025-05-28 21:34:02,260 - services.nlp_service - INFO - Loaded reverse translation model for ja
+2025-05-28 21:34:02,357 - services.nlp_service - WARNING - Failed to load translation models for ko: Helsinki-NLP/opus-mt-en-kor is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `huggingface-cli login` or by passing `token=<your_token>`
+2025-05-28 21:34:04,999 - services.nlp_service - INFO - Loaded forward translation model for ar
+2025-05-28 21:34:07,511 - services.nlp_service - INFO - Loaded reverse translation model for ar
+2025-05-28 21:34:13,037 - services.nlp_service - INFO - Summarization model initialized successfully
+2025-05-28 21:34:14,056 - services.nlp_service - INFO - Initializing NLPService
+2025-05-28 21:34:16,651 - services.nlp_service - INFO - Loaded forward translation model for hi
+2025-05-28 21:34:19,265 - services.nlp_service - INFO - Loaded reverse translation model for hi
+2025-05-28 21:34:21,750 - services.nlp_service - INFO - Loaded forward translation model for fr
+2025-05-28 21:34:24,222 - services.nlp_service - INFO - Loaded reverse translation model for fr
+2025-05-28 21:34:27,317 - services.nlp_service - INFO - Loaded forward translation model for es
+2025-05-28 21:34:29,988 - services.nlp_service - INFO - Loaded reverse translation model for es
+2025-05-28 21:34:32,547 - services.nlp_service - INFO - Loaded forward translation model for de
+2025-05-28 21:34:35,103 - services.nlp_service - INFO - Loaded reverse translation model for de
+2025-05-28 21:34:37,972 - services.nlp_service - INFO - Loaded forward translation model for zh
+2025-05-28 21:34:40,364 - services.nlp_service - INFO - Loaded reverse translation model for zh
+2025-05-28 21:34:42,778 - services.nlp_service - INFO - Loaded forward translation model for ja
+2025-05-28 21:34:45,368 - services.nlp_service - INFO - Loaded reverse translation model for ja
+2025-05-28 21:34:45,469 - services.nlp_service - WARNING - Failed to load translation models for ko: Helsinki-NLP/opus-mt-en-kor is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `huggingface-cli login` or by passing `token=<your_token>`
+2025-05-28 21:34:48,165 - services.nlp_service - INFO - Loaded forward translation model for ar
+2025-05-28 21:34:51,646 - services.nlp_service - INFO - Loaded reverse translation model for ar
+2025-05-28 21:35:01,023 - services.nlp_service - ERROR - Failed to initialize summarization model: CUDA out of memory. Tried to allocate 20.00 MiB. GPU 0 has a total capacity of 4.00 GiB of which 0 bytes is free. Of the allocated memory 10.78 GiB is allocated by PyTorch, and 51.35 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+2025-05-28 21:35:01,032 - __main__ - ERROR - Failed to initialize application: CUDA out of memory. Tried to allocate 20.00 MiB. GPU 0 has a total capacity of 4.00 GiB of which 0 bytes is free. Of the allocated memory 10.78 GiB is allocated by PyTorch, and 51.35 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+2025-05-28 21:38:42,001 - services.audio_service - INFO - Initializing AudioService
+2025-05-28 21:38:43,221 - engineio.server - INFO - Server initialized for eventlet.
+2025-05-28 21:38:46,080 - services.audio_service - INFO - Initializing AudioService
+2025-05-28 21:38:46,086 - services.transcription_service - INFO - Limited GPU memory detected, using CPU for better stability
+2025-05-28 21:38:46,086 - services.transcription_service - INFO - Using device: cpu
+2025-05-28 21:38:46,087 - services.transcription_service - INFO - Initializing Whisper model with configuration: base
+2025-05-28 21:38:52,921 - services.transcription_service - INFO - Whisper model initialized successfully
+2025-05-28 21:38:52,922 - services.audio_service - INFO - Initializing AudioService
+2025-05-28 21:38:52,923 - services.nlp_service - INFO - Initializing NLPService
+2025-05-28 21:38:52,928 - services.nlp_service - INFO - GPU Memory: 4.00 GB
+2025-05-28 21:38:52,928 - services.nlp_service - INFO - System Memory: 15.80 GB
+2025-05-28 21:38:52,929 - services.nlp_service - INFO - Limited resources detected, using CPU for better stability
+2025-05-28 21:38:52,929 - services.nlp_service - INFO - Using device: cpu
+2025-05-28 21:38:54,979 - services.nlp_service - INFO - Loaded forward translation model for hi
+2025-05-28 21:38:56,892 - services.nlp_service - INFO - Loaded reverse translation model for hi
+2025-05-28 21:38:58,767 - services.nlp_service - INFO - Loaded forward translation model for fr
+2025-05-28 21:39:00,603 - services.nlp_service - INFO - Loaded reverse translation model for fr
+2025-05-28 21:39:02,491 - services.nlp_service - INFO - Loaded forward translation model for es
+2025-05-28 21:39:04,470 - services.nlp_service - INFO - Loaded reverse translation model for es
+2025-05-28 21:39:06,294 - services.nlp_service - INFO - Loaded forward translation model for de
+2025-05-28 21:39:08,063 - services.nlp_service - INFO - Loaded reverse translation model for de
+2025-05-28 21:39:09,884 - services.nlp_service - INFO - Loaded forward translation model for zh
+2025-05-28 21:39:11,671 - services.nlp_service - INFO - Loaded reverse translation model for zh
+2025-05-28 21:39:13,561 - services.nlp_service - INFO - Loaded forward translation model for ja
+2025-05-28 21:39:15,257 - services.nlp_service - INFO - Loaded reverse translation model for ja
+2025-05-28 21:39:15,360 - services.nlp_service - WARNING - Failed to load translation models for ko: Helsinki-NLP/opus-mt-en-kor is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `huggingface-cli login` or by passing `token=<your_token>`
+2025-05-28 21:39:17,185 - services.nlp_service - INFO - Loaded forward translation model for ar
+2025-05-28 21:39:19,014 - services.nlp_service - INFO - Loaded reverse translation model for ar
+2025-05-28 21:39:19,847 - services.nlp_service - ERROR - Failed to initialize summarization model: Cannot copy out of meta tensor; no data! Please use torch.nn.Module.to_empty() instead of torch.nn.Module.to() when moving module from meta to a different device.
+2025-05-28 21:39:19,848 - services.transcription_service - ERROR - Failed to initialize TranscriptionService: Cannot copy out of meta tensor; no data! Please use torch.nn.Module.to_empty() instead of torch.nn.Module.to() when moving module from meta to a different device.
+2025-05-28 21:39:19,850 - __main__ - ERROR - Failed to initialize application: Cannot copy out of meta tensor; no data! Please use torch.nn.Module.to_empty() instead of torch.nn.Module.to() when moving module from meta to a different device.
+2025-05-28 21:41:32,429 - services.audio_service - INFO - Initializing AudioService
+2025-05-28 21:41:33,665 - engineio.server - INFO - Server initialized for eventlet.
+2025-05-28 21:41:37,118 - services.audio_service - INFO - Initializing AudioService
+2025-05-28 21:41:37,122 - services.transcription_service - INFO - Limited GPU memory detected, using CPU for better stability
+2025-05-28 21:41:37,123 - services.transcription_service - INFO - Using device: cpu
+2025-05-28 21:41:37,124 - services.transcription_service - INFO - Initializing Whisper model with configuration: base
+2025-05-28 21:41:38,059 - services.transcription_service - INFO - Whisper model initialized successfully
+2025-05-28 21:41:38,060 - services.audio_service - INFO - Initializing AudioService
+2025-05-28 21:41:38,060 - services.nlp_service - INFO - Initializing NLPService
+2025-05-28 21:41:38,067 - services.nlp_service - INFO - GPU Memory: 4.00 GB
+2025-05-28 21:41:38,069 - services.nlp_service - INFO - System Memory: 15.80 GB
+2025-05-28 21:41:38,069 - services.nlp_service - INFO - Limited resources detected, using CPU for better stability
+2025-05-28 21:41:38,069 - services.nlp_service - INFO - Using device: cpu
+2025-05-28 21:41:38,070 - services.nlp_service - INFO - Loading summarization model...
+2025-05-28 21:41:39,251 - services.nlp_service - ERROR - Failed to initialize summarization model: Cannot copy out of meta tensor; no data! Please use torch.nn.Module.to_empty() instead of torch.nn.Module.to() when moving module from meta to a different device.
+2025-05-28 21:41:39,252 - services.transcription_service - ERROR - Failed to initialize TranscriptionService: Cannot copy out of meta tensor; no data! Please use torch.nn.Module.to_empty() instead of torch.nn.Module.to() when moving module from meta to a different device.
+2025-05-28 21:41:39,253 - __main__ - ERROR - Failed to initialize application: Cannot copy out of meta tensor; no data! Please use torch.nn.Module.to_empty() instead of torch.nn.Module.to() when moving module from meta to a different device.
+2025-05-28 21:43:46,794 - services.audio_service - INFO - Initializing AudioService
+2025-05-28 21:43:47,788 - engineio.server - INFO - Server initialized for eventlet.
+2025-05-28 21:43:50,123 - services.audio_service - INFO - Initializing AudioService
+2025-05-28 21:43:50,128 - services.transcription_service - INFO - Limited GPU memory detected, using CPU for better stability
+2025-05-28 21:43:50,129 - services.transcription_service - INFO - Using device: cpu
+2025-05-28 21:43:50,129 - services.transcription_service - INFO - Initializing Whisper model with configuration: base
+2025-05-28 21:43:51,059 - services.transcription_service - INFO - Whisper model initialized successfully
+2025-05-28 21:43:51,060 - services.audio_service - INFO - Initializing AudioService
+2025-05-28 21:43:51,061 - services.nlp_service - INFO - Initializing NLPService
+2025-05-28 21:43:51,066 - services.nlp_service - INFO - GPU Memory: 4.00 GB
+2025-05-28 21:43:51,066 - services.nlp_service - INFO - System Memory: 15.80 GB
+2025-05-28 21:43:51,066 - services.nlp_service - INFO - Limited resources detected, using CPU for better stability
+2025-05-28 21:43:51,067 - services.nlp_service - INFO - Using device: cpu
+2025-05-28 21:43:51,067 - services.nlp_service - INFO - Loading summarization model...
+2025-05-28 21:43:52,273 - services.nlp_service - ERROR - Failed to initialize summarization model: Cannot copy out of meta tensor; no data! Please use torch.nn.Module.to_empty() instead of torch.nn.Module.to() when moving module from meta to a different device.
+2025-05-28 21:43:52,273 - services.transcription_service - ERROR - Failed to initialize TranscriptionService: Cannot copy out of meta tensor; no data! Please use torch.nn.Module.to_empty() instead of torch.nn.Module.to() when moving module from meta to a different device.
+2025-05-28 21:43:52,275 - __main__ - ERROR - Failed to initialize application: Cannot copy out of meta tensor; no data! Please use torch.nn.Module.to_empty() instead of torch.nn.Module.to() when moving module from meta to a different device.
+2025-05-28 21:45:16,138 - services.audio_service - INFO - Initializing AudioService
+2025-05-28 21:45:17,141 - engineio.server - INFO - Server initialized for eventlet.
+2025-05-28 21:45:19,442 - services.audio_service - INFO - Initializing AudioService
+2025-05-28 21:45:19,445 - services.transcription_service - INFO - Limited GPU memory detected, using CPU for better stability
+2025-05-28 21:45:19,446 - services.transcription_service - INFO - Using device: cpu
+2025-05-28 21:45:19,446 - services.transcription_service - INFO - Initializing Whisper model with configuration: base
+2025-05-28 21:45:20,355 - services.transcription_service - INFO - Whisper model initialized successfully
+2025-05-28 21:45:20,356 - services.audio_service - INFO - Initializing AudioService
+2025-05-28 21:45:20,356 - services.nlp_service - INFO - Initializing NLPService
+2025-05-28 21:45:20,361 - services.nlp_service - INFO - GPU Memory: 4.00 GB
+2025-05-28 21:45:20,362 - services.nlp_service - INFO - System Memory: 15.80 GB
+2025-05-28 21:45:20,362 - services.nlp_service - INFO - Limited resources detected, using CPU for better stability
+2025-05-28 21:45:20,362 - services.nlp_service - INFO - Using device: cpu
+2025-05-28 21:45:20,363 - services.nlp_service - INFO - Loading summarization model...
+2025-05-28 21:45:21,672 - services.nlp_service - ERROR - Error loading model facebook/bart-large-cnn: Module.to_empty() missing 1 required keyword-only argument: 'device'
+2025-05-28 21:45:21,673 - services.nlp_service - ERROR - Traceback: Traceback (most recent call last):
+  File "c:\Users\Srinivasa Dixit\MOM\services\nlp_service.py", line 276, in _load_model
+    empty_model = model.to_empty()
+                  ^^^^^^^^^^^^^^^^
+TypeError: Module.to_empty() missing 1 required keyword-only argument: 'device'
+
+2025-05-28 21:45:21,675 - services.nlp_service - ERROR - Failed to initialize summarization model: Module.to_empty() missing 1 required keyword-only argument: 'device'
+2025-05-28 21:45:21,676 - services.nlp_service - ERROR - Traceback: Traceback (most recent call last):
+  File "c:\Users\Srinivasa Dixit\MOM\services\nlp_service.py", line 203, in __init__
+    model = self._load_model(model_name)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\Srinivasa Dixit\MOM\services\nlp_service.py", line 276, in _load_model
+    empty_model = model.to_empty()
+                  ^^^^^^^^^^^^^^^^
+TypeError: Module.to_empty() missing 1 required keyword-only argument: 'device'
+
+2025-05-28 21:45:21,676 - services.transcription_service - ERROR - Failed to initialize TranscriptionService: Module.to_empty() missing 1 required keyword-only argument: 'device'
+2025-05-28 21:45:21,677 - __main__ - ERROR - Failed to initialize application: Module.to_empty() missing 1 required keyword-only argument: 'device'
+2025-05-28 21:46:28,176 - services.audio_service - INFO - Initializing AudioService
+2025-05-28 21:46:29,132 - engineio.server - INFO - Server initialized for eventlet.
+2025-05-28 21:46:31,392 - services.audio_service - INFO - Initializing AudioService
+2025-05-28 21:46:31,396 - services.transcription_service - INFO - Limited GPU memory detected, using CPU for better stability
+2025-05-28 21:46:31,397 - services.transcription_service - INFO - Using device: cpu
+2025-05-28 21:46:31,399 - services.transcription_service - INFO - Initializing Whisper model with configuration: base
+2025-05-28 21:46:32,293 - services.transcription_service - INFO - Whisper model initialized successfully
+2025-05-28 21:46:32,293 - services.audio_service - INFO - Initializing AudioService
+2025-05-28 21:46:32,294 - services.nlp_service - INFO - Initializing NLPService
+2025-05-28 21:46:32,298 - services.nlp_service - INFO - GPU Memory: 4.00 GB
+2025-05-28 21:46:32,298 - services.nlp_service - INFO - System Memory: 15.80 GB
+2025-05-28 21:46:32,298 - services.nlp_service - INFO - Limited resources detected, using CPU for better stability
+2025-05-28 21:46:32,299 - services.nlp_service - INFO - Using device: cpu
+2025-05-28 21:46:32,299 - services.nlp_service - INFO - Loading summarization model...
+2025-05-28 21:46:33,398 - services.nlp_service - INFO - Summarization model initialized successfully
+2025-05-28 21:46:33,399 - services.nlp_service - INFO - Loading forward translation model for hi...
+2025-05-28 21:46:35,197 - services.nlp_service - INFO - Loaded forward translation model for hi
+2025-05-28 21:46:35,197 - services.nlp_service - INFO - Loading reverse translation model for hi...
+2025-05-28 21:46:36,996 - services.nlp_service - INFO - Loaded reverse translation model for hi
+2025-05-28 21:46:36,996 - services.nlp_service - INFO - Loading forward translation model for fr...
+2025-05-28 21:46:38,766 - services.nlp_service - INFO - Loaded forward translation model for fr
+2025-05-28 21:46:38,767 - services.nlp_service - INFO - Loading reverse translation model for fr...
+2025-05-28 21:46:40,654 - services.nlp_service - INFO - Loaded reverse translation model for fr
+2025-05-28 21:46:40,654 - services.nlp_service - INFO - Loading forward translation model for es...
+2025-05-28 21:46:42,408 - services.nlp_service - INFO - Loaded forward translation model for es
+2025-05-28 21:46:42,409 - services.nlp_service - INFO - Loading reverse translation model for es...
+2025-05-28 21:46:44,413 - services.nlp_service - INFO - Loaded reverse translation model for es
+2025-05-28 21:46:44,413 - services.nlp_service - INFO - Loading forward translation model for de...
+2025-05-28 21:46:46,172 - services.nlp_service - INFO - Loaded forward translation model for de
+2025-05-28 21:46:46,173 - services.nlp_service - INFO - Loading reverse translation model for de...
+2025-05-28 21:46:47,994 - services.nlp_service - INFO - Loaded reverse translation model for de
+2025-05-28 21:46:47,995 - services.nlp_service - INFO - Loading forward translation model for zh...
+2025-05-28 21:46:49,886 - services.nlp_service - INFO - Loaded forward translation model for zh
+2025-05-28 21:46:49,886 - services.nlp_service - INFO - Loading reverse translation model for zh...
+2025-05-28 21:46:51,702 - services.nlp_service - INFO - Loaded reverse translation model for zh
+2025-05-28 21:46:51,702 - services.nlp_service - INFO - Loading forward translation model for ja...
+2025-05-28 21:46:53,460 - services.nlp_service - INFO - Loaded forward translation model for ja
+2025-05-28 21:46:53,461 - services.nlp_service - INFO - Loading reverse translation model for ja...
+2025-05-28 21:46:55,311 - services.nlp_service - INFO - Loaded reverse translation model for ja
+2025-05-28 21:46:55,312 - services.nlp_service - INFO - Loading forward translation model for ko...
+2025-05-28 21:46:55,857 - services.nlp_service - WARNING - Failed to load translation models for ko: Helsinki-NLP/opus-mt-en-kor is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `huggingface-cli login` or by passing `token=<your_token>`
+2025-05-28 21:46:55,921 - services.nlp_service - WARNING - Traceback: Traceback (most recent call last):
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\utils\_http.py", line 409, in hf_raise_for_status
+    response.raise_for_status()
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\requests\models.py", line 1024, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 401 Client Error: Unauthorized for url: https://huggingface.co/Helsinki-NLP/opus-mt-en-kor/resolve/main/tokenizer_config.json
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\transformers\utils\hub.py", line 398, in cached_file
+    resolved_file = hf_hub_download(
+                    ^^^^^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\utils\_validators.py", line 114, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\file_download.py", line 1008, in hf_hub_download
+    return _hf_hub_download_to_cache_dir(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\file_download.py", line 1115, in _hf_hub_download_to_cache_dir
+    _raise_on_head_call_error(head_call_error, force_download, local_files_only)
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\file_download.py", line 1643, in _raise_on_head_call_error
+    raise head_call_error
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\file_download.py", line 1531, in _get_metadata_or_catch_error
+    metadata = get_hf_file_metadata(
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\utils\_validators.py", line 114, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\file_download.py", line 1448, in get_hf_file_metadata
+    r = _request_wrapper(
+        ^^^^^^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\file_download.py", line 286, in _request_wrapper
+    response = _request_wrapper(
+               ^^^^^^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\file_download.py", line 310, in _request_wrapper
+    hf_raise_for_status(response)
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\utils\_http.py", line 459, in hf_raise_for_status
+    raise _format(RepositoryNotFoundError, message, response) from e
+huggingface_hub.errors.RepositoryNotFoundError: 401 Client Error. (Request ID: Root=1-683736f7-5c003a03516ccf662ca906a6;2623d310-ba34-4bc8-8964-609725a6a65e)
+
+Repository Not Found for url: https://huggingface.co/Helsinki-NLP/opus-mt-en-kor/resolve/main/tokenizer_config.json.
+Please make sure you specified the correct `repo_id` and `repo_type`.
+If you are trying to access a private or gated repo, make sure you are authenticated. For more details, see https://huggingface.co/docs/huggingface_hub/authentication
+Invalid username or password.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "c:\Users\Srinivasa Dixit\MOM\services\nlp_service.py", line 297, in _initialize_translation_models
+    tokenizer = AutoTokenizer.from_pretrained(models["en-to-lang"])
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\transformers\models\auto\tokenization_auto.py", line 767, in from_pretrained
+    tokenizer_config = get_tokenizer_config(pretrained_model_name_or_path, **kwargs)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\transformers\models\auto\tokenization_auto.py", line 600, in get_tokenizer_config
+    resolved_config_file = cached_file(
+                           ^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\transformers\utils\hub.py", line 421, in cached_file
+    raise EnvironmentError(
+OSError: Helsinki-NLP/opus-mt-en-kor is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `huggingface-cli login` or by passing `token=<your_token>`
+
+2025-05-28 21:46:55,930 - services.nlp_service - INFO - Loading forward translation model for ar...
+2025-05-28 21:46:57,819 - services.nlp_service - INFO - Loaded forward translation model for ar
+2025-05-28 21:46:57,820 - services.nlp_service - INFO - Loading reverse translation model for ar...
+2025-05-28 21:46:59,570 - services.nlp_service - INFO - Loaded reverse translation model for ar
+2025-05-28 21:47:00,347 - services.nlp_service - INFO - Initializing NLPService
+2025-05-28 21:47:00,352 - services.nlp_service - INFO - GPU Memory: 4.00 GB
+2025-05-28 21:47:00,352 - services.nlp_service - INFO - System Memory: 15.80 GB
+2025-05-28 21:47:00,352 - services.nlp_service - INFO - Limited resources detected, using CPU for better stability
+2025-05-28 21:47:00,353 - services.nlp_service - INFO - Using device: cpu
+2025-05-28 21:47:00,353 - services.nlp_service - INFO - Loading summarization model...
+2025-05-28 21:47:01,351 - services.nlp_service - INFO - Summarization model initialized successfully
+2025-05-28 21:47:01,352 - services.nlp_service - INFO - Loading forward translation model for hi...
+2025-05-28 21:47:03,235 - services.nlp_service - INFO - Loaded forward translation model for hi
+2025-05-28 21:47:03,236 - services.nlp_service - INFO - Loading reverse translation model for hi...
+2025-05-28 21:47:05,035 - services.nlp_service - INFO - Loaded reverse translation model for hi
+2025-05-28 21:47:05,036 - services.nlp_service - INFO - Loading forward translation model for fr...
+2025-05-28 21:47:06,789 - services.nlp_service - INFO - Loaded forward translation model for fr
+2025-05-28 21:47:06,790 - services.nlp_service - INFO - Loading reverse translation model for fr...
+2025-05-28 21:47:08,516 - services.nlp_service - INFO - Loaded reverse translation model for fr
+2025-05-28 21:47:08,517 - services.nlp_service - INFO - Loading forward translation model for es...
+2025-05-28 21:47:10,310 - services.nlp_service - INFO - Loaded forward translation model for es
+2025-05-28 21:47:10,311 - services.nlp_service - INFO - Loading reverse translation model for es...
+2025-05-28 21:47:12,290 - services.nlp_service - INFO - Loaded reverse translation model for es
+2025-05-28 21:47:12,290 - services.nlp_service - INFO - Loading forward translation model for de...
+2025-05-28 21:47:14,229 - services.nlp_service - INFO - Loaded forward translation model for de
+2025-05-28 21:47:14,230 - services.nlp_service - INFO - Loading reverse translation model for de...
+2025-05-28 21:47:16,089 - services.nlp_service - INFO - Loaded reverse translation model for de
+2025-05-28 21:47:16,089 - services.nlp_service - INFO - Loading forward translation model for zh...
+2025-05-28 21:47:17,922 - services.nlp_service - INFO - Loaded forward translation model for zh
+2025-05-28 21:47:17,923 - services.nlp_service - INFO - Loading reverse translation model for zh...
+2025-05-28 21:47:19,721 - services.nlp_service - INFO - Loaded reverse translation model for zh
+2025-05-28 21:47:19,721 - services.nlp_service - INFO - Loading forward translation model for ja...
+2025-05-28 21:47:21,470 - services.nlp_service - INFO - Loaded forward translation model for ja
+2025-05-28 21:47:21,471 - services.nlp_service - INFO - Loading reverse translation model for ja...
+2025-05-28 21:47:23,330 - services.nlp_service - INFO - Loaded reverse translation model for ja
+2025-05-28 21:47:23,330 - services.nlp_service - INFO - Loading forward translation model for ko...
+2025-05-28 21:47:23,459 - services.nlp_service - WARNING - Failed to load translation models for ko: Helsinki-NLP/opus-mt-en-kor is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `huggingface-cli login` or by passing `token=<your_token>`
+2025-05-28 21:47:23,461 - services.nlp_service - WARNING - Traceback: Traceback (most recent call last):
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\utils\_http.py", line 409, in hf_raise_for_status
+    response.raise_for_status()
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\requests\models.py", line 1024, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 401 Client Error: Unauthorized for url: https://huggingface.co/Helsinki-NLP/opus-mt-en-kor/resolve/main/tokenizer_config.json
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\transformers\utils\hub.py", line 398, in cached_file
+    resolved_file = hf_hub_download(
+                    ^^^^^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\utils\_validators.py", line 114, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\file_download.py", line 1008, in hf_hub_download
+    return _hf_hub_download_to_cache_dir(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\file_download.py", line 1115, in _hf_hub_download_to_cache_dir
+    _raise_on_head_call_error(head_call_error, force_download, local_files_only)
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\file_download.py", line 1643, in _raise_on_head_call_error
+    raise head_call_error
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\file_download.py", line 1531, in _get_metadata_or_catch_error
+    metadata = get_hf_file_metadata(
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\utils\_validators.py", line 114, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\file_download.py", line 1448, in get_hf_file_metadata
+    r = _request_wrapper(
+        ^^^^^^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\file_download.py", line 286, in _request_wrapper
+    response = _request_wrapper(
+               ^^^^^^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\file_download.py", line 310, in _request_wrapper
+    hf_raise_for_status(response)
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\utils\_http.py", line 459, in hf_raise_for_status
+    raise _format(RepositoryNotFoundError, message, response) from e
+huggingface_hub.errors.RepositoryNotFoundError: 401 Client Error. (Request ID: Root=1-68373713-64f6db3e30681db33f95464a;94dd3b27-5349-4f2c-8cac-46c1e4d01cc5)
+
+Repository Not Found for url: https://huggingface.co/Helsinki-NLP/opus-mt-en-kor/resolve/main/tokenizer_config.json.
+Please make sure you specified the correct `repo_id` and `repo_type`.
+If you are trying to access a private or gated repo, make sure you are authenticated. For more details, see https://huggingface.co/docs/huggingface_hub/authentication
+Invalid username or password.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "c:\Users\Srinivasa Dixit\MOM\services\nlp_service.py", line 297, in _initialize_translation_models
+    tokenizer = AutoTokenizer.from_pretrained(models["en-to-lang"])
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\transformers\models\auto\tokenization_auto.py", line 767, in from_pretrained
+    tokenizer_config = get_tokenizer_config(pretrained_model_name_or_path, **kwargs)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\transformers\models\auto\tokenization_auto.py", line 600, in get_tokenizer_config
+    resolved_config_file = cached_file(
+                           ^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\transformers\utils\hub.py", line 421, in cached_file
+    raise EnvironmentError(
+OSError: Helsinki-NLP/opus-mt-en-kor is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `huggingface-cli login` or by passing `token=<your_token>`
+
+2025-05-28 21:47:23,468 - services.nlp_service - INFO - Loading forward translation model for ar...
+2025-05-28 21:47:25,434 - services.nlp_service - INFO - Loaded forward translation model for ar
+2025-05-28 21:47:25,435 - services.nlp_service - INFO - Loading reverse translation model for ar...
+2025-05-28 21:47:27,444 - services.nlp_service - INFO - Loaded reverse translation model for ar
+2025-05-28 21:47:27,960 - __main__ - INFO - Application initialized successfully
+2025-05-28 21:47:27,960 - __main__ - INFO - Starting application server...
+2025-05-28 21:47:27,965 - werkzeug - INFO -  * Restarting with stat
+2025-05-28 21:47:34,941 - services.audio_service - INFO - Initializing AudioService
+2025-05-28 21:47:36,045 - engineio.server - INFO - Server initialized for eventlet.
+2025-05-28 21:47:38,498 - services.audio_service - INFO - Initializing AudioService
+2025-05-28 21:47:38,501 - services.transcription_service - INFO - Limited GPU memory detected, using CPU for better stability
+2025-05-28 21:47:38,502 - services.transcription_service - INFO - Using device: cpu
+2025-05-28 21:47:38,502 - services.transcription_service - INFO - Initializing Whisper model with configuration: base
+2025-05-28 21:47:39,587 - services.transcription_service - INFO - Whisper model initialized successfully
+2025-05-28 21:47:39,588 - services.audio_service - INFO - Initializing AudioService
+2025-05-28 21:47:39,588 - services.nlp_service - INFO - Initializing NLPService
+2025-05-28 21:47:39,593 - services.nlp_service - INFO - GPU Memory: 4.00 GB
+2025-05-28 21:47:39,593 - services.nlp_service - INFO - System Memory: 15.80 GB
+2025-05-28 21:47:39,594 - services.nlp_service - INFO - Limited resources detected, using CPU for better stability
+2025-05-28 21:47:39,594 - services.nlp_service - INFO - Using device: cpu
+2025-05-28 21:47:39,594 - services.nlp_service - INFO - Loading summarization model...
+2025-05-28 21:47:40,968 - services.nlp_service - INFO - Summarization model initialized successfully
+2025-05-28 21:47:40,968 - services.nlp_service - INFO - Loading forward translation model for hi...
+2025-05-28 21:47:43,096 - services.nlp_service - INFO - Loaded forward translation model for hi
+2025-05-28 21:47:43,097 - services.nlp_service - INFO - Loading reverse translation model for hi...
+2025-05-28 21:47:45,228 - services.nlp_service - INFO - Loaded reverse translation model for hi
+2025-05-28 21:47:45,228 - services.nlp_service - INFO - Loading forward translation model for fr...
+2025-05-28 21:47:47,138 - services.nlp_service - INFO - Loaded forward translation model for fr
+2025-05-28 21:47:47,139 - services.nlp_service - INFO - Loading reverse translation model for fr...
+2025-05-28 21:47:49,073 - services.nlp_service - INFO - Loaded reverse translation model for fr
+2025-05-28 21:47:49,074 - services.nlp_service - INFO - Loading forward translation model for es...
+2025-05-28 21:47:51,081 - services.nlp_service - INFO - Loaded forward translation model for es
+2025-05-28 21:47:51,082 - services.nlp_service - INFO - Loading reverse translation model for es...
+2025-05-28 21:47:53,239 - services.nlp_service - INFO - Loaded reverse translation model for es
+2025-05-28 21:47:53,239 - services.nlp_service - INFO - Loading forward translation model for de...
+2025-05-28 21:47:55,292 - services.nlp_service - INFO - Loaded forward translation model for de
+2025-05-28 21:47:55,293 - services.nlp_service - INFO - Loading reverse translation model for de...
+2025-05-28 21:49:34,774 - services.audio_service - INFO - Initializing AudioService
+2025-05-28 21:49:35,805 - engineio.server - INFO - Server initialized for eventlet.
+2025-05-28 21:49:38,277 - services.audio_service - INFO - Initializing AudioService
+2025-05-28 21:49:38,281 - services.transcription_service - INFO - Limited GPU memory detected, using CPU for better stability
+2025-05-28 21:49:38,282 - services.transcription_service - INFO - Using device: cpu
+2025-05-28 21:49:38,282 - services.transcription_service - INFO - Initializing Whisper model with configuration: base
+2025-05-28 21:49:39,293 - services.transcription_service - INFO - Whisper model initialized successfully
+2025-05-28 21:49:39,294 - services.audio_service - INFO - Initializing AudioService
+2025-05-28 21:49:39,294 - services.nlp_service - INFO - Initializing NLPService
+2025-05-28 21:49:39,299 - services.nlp_service - INFO - GPU Memory: 4.00 GB
+2025-05-28 21:49:39,299 - services.nlp_service - INFO - System Memory: 15.80 GB
+2025-05-28 21:49:39,300 - services.nlp_service - INFO - Limited resources detected, using CPU for better stability
+2025-05-28 21:49:39,300 - services.nlp_service - INFO - Using device: cpu
+2025-05-28 21:49:39,300 - services.nlp_service - INFO - Loading summarization model...
+2025-05-28 21:49:40,476 - services.nlp_service - INFO - Summarization model initialized successfully
+2025-05-28 21:49:40,476 - services.nlp_service - INFO - Loading forward translation model for hi...
+2025-05-28 21:49:42,352 - services.nlp_service - INFO - Loaded forward translation model for hi
+2025-05-28 21:49:42,352 - services.nlp_service - INFO - Loading reverse translation model for hi...
+2025-05-28 21:49:44,199 - services.nlp_service - INFO - Loaded reverse translation model for hi
+2025-05-28 21:49:44,201 - services.nlp_service - INFO - Loading forward translation model for fr...
+2025-05-28 21:49:45,973 - services.nlp_service - INFO - Loaded forward translation model for fr
+2025-05-28 21:49:45,974 - services.nlp_service - INFO - Loading reverse translation model for fr...
+2025-05-28 21:49:47,758 - services.nlp_service - INFO - Loaded reverse translation model for fr
+2025-05-28 21:49:47,759 - services.nlp_service - INFO - Loading forward translation model for es...
+2025-05-28 21:49:49,527 - services.nlp_service - INFO - Loaded forward translation model for es
+2025-05-28 21:49:49,528 - services.nlp_service - INFO - Loading reverse translation model for es...
+2025-05-28 21:49:51,287 - services.nlp_service - INFO - Loaded reverse translation model for es
+2025-05-28 21:49:51,288 - services.nlp_service - INFO - Loading forward translation model for de...
+2025-05-28 21:49:53,023 - services.nlp_service - INFO - Loaded forward translation model for de
+2025-05-28 21:49:53,023 - services.nlp_service - INFO - Loading reverse translation model for de...
+2025-05-28 21:49:55,309 - services.nlp_service - INFO - Loaded reverse translation model for de
+2025-05-28 21:49:55,310 - services.nlp_service - INFO - Loading forward translation model for zh...
+2025-05-28 21:49:57,245 - services.nlp_service - INFO - Loaded forward translation model for zh
+2025-05-28 21:49:57,246 - services.nlp_service - INFO - Loading reverse translation model for zh...
+2025-05-28 21:49:59,145 - services.nlp_service - INFO - Loaded reverse translation model for zh
+2025-05-28 21:49:59,145 - services.nlp_service - INFO - Loading forward translation model for ja...
+2025-05-28 21:50:01,330 - services.nlp_service - INFO - Loaded forward translation model for ja
+2025-05-28 21:50:01,330 - services.nlp_service - INFO - Loading reverse translation model for ja...
+2025-05-28 21:50:03,178 - services.nlp_service - INFO - Loaded reverse translation model for ja
+2025-05-28 21:50:03,179 - services.nlp_service - INFO - Loading forward translation model for ko...
+2025-05-28 21:50:03,276 - services.nlp_service - WARNING - Failed to load translation models for ko: Helsinki-NLP/opus-mt-en-kor is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `huggingface-cli login` or by passing `token=<your_token>`
+2025-05-28 21:50:03,284 - services.nlp_service - WARNING - Traceback: Traceback (most recent call last):
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\utils\_http.py", line 409, in hf_raise_for_status
+    response.raise_for_status()
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\requests\models.py", line 1024, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 401 Client Error: Unauthorized for url: https://huggingface.co/Helsinki-NLP/opus-mt-en-kor/resolve/main/tokenizer_config.json
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\transformers\utils\hub.py", line 398, in cached_file
+    resolved_file = hf_hub_download(
+                    ^^^^^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\utils\_validators.py", line 114, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\file_download.py", line 1008, in hf_hub_download
+    return _hf_hub_download_to_cache_dir(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\file_download.py", line 1115, in _hf_hub_download_to_cache_dir
+    _raise_on_head_call_error(head_call_error, force_download, local_files_only)
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\file_download.py", line 1643, in _raise_on_head_call_error
+    raise head_call_error
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\file_download.py", line 1531, in _get_metadata_or_catch_error
+    metadata = get_hf_file_metadata(
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\utils\_validators.py", line 114, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\file_download.py", line 1448, in get_hf_file_metadata
+    r = _request_wrapper(
+        ^^^^^^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\file_download.py", line 286, in _request_wrapper
+    response = _request_wrapper(
+               ^^^^^^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\file_download.py", line 310, in _request_wrapper
+    hf_raise_for_status(response)
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\utils\_http.py", line 459, in hf_raise_for_status
+    raise _format(RepositoryNotFoundError, message, response) from e
+huggingface_hub.errors.RepositoryNotFoundError: 401 Client Error. (Request ID: Root=1-683737b3-425bb8bf17392f56184c87d7;b2033757-9896-458f-940f-846ba3076a16)
+
+Repository Not Found for url: https://huggingface.co/Helsinki-NLP/opus-mt-en-kor/resolve/main/tokenizer_config.json.
+Please make sure you specified the correct `repo_id` and `repo_type`.
+If you are trying to access a private or gated repo, make sure you are authenticated. For more details, see https://huggingface.co/docs/huggingface_hub/authentication
+Invalid username or password.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "c:\Users\Srinivasa Dixit\MOM\services\nlp_service.py", line 297, in _initialize_translation_models
+    tokenizer = AutoTokenizer.from_pretrained(models["en-to-lang"])
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\transformers\models\auto\tokenization_auto.py", line 767, in from_pretrained
+    tokenizer_config = get_tokenizer_config(pretrained_model_name_or_path, **kwargs)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\transformers\models\auto\tokenization_auto.py", line 600, in get_tokenizer_config
+    resolved_config_file = cached_file(
+                           ^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\transformers\utils\hub.py", line 421, in cached_file
+    raise EnvironmentError(
+OSError: Helsinki-NLP/opus-mt-en-kor is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `huggingface-cli login` or by passing `token=<your_token>`
+
+2025-05-28 21:50:03,292 - services.nlp_service - INFO - Loading forward translation model for ar...
+2025-05-28 21:50:05,366 - services.nlp_service - INFO - Loaded forward translation model for ar
+2025-05-28 21:50:05,367 - services.nlp_service - INFO - Loading reverse translation model for ar...
+2025-05-28 21:50:07,275 - services.nlp_service - INFO - Loaded reverse translation model for ar
+2025-05-28 21:50:07,845 - services.nlp_service - INFO - Initializing NLPService
+2025-05-28 21:50:07,850 - services.nlp_service - INFO - GPU Memory: 4.00 GB
+2025-05-28 21:50:07,850 - services.nlp_service - INFO - System Memory: 15.80 GB
+2025-05-28 21:50:07,851 - services.nlp_service - INFO - Limited resources detected, using CPU for better stability
+2025-05-28 21:50:07,851 - services.nlp_service - INFO - Using device: cpu
+2025-05-28 21:50:07,852 - services.nlp_service - INFO - Loading summarization model...
+2025-05-28 21:50:08,832 - services.nlp_service - INFO - Summarization model initialized successfully
+2025-05-28 21:50:08,832 - services.nlp_service - INFO - Loading forward translation model for hi...
+2025-05-28 21:50:10,624 - services.nlp_service - INFO - Loaded forward translation model for hi
+2025-05-28 21:50:10,625 - services.nlp_service - INFO - Loading reverse translation model for hi...
+2025-05-28 21:50:12,494 - services.nlp_service - INFO - Loaded reverse translation model for hi
+2025-05-28 21:50:12,495 - services.nlp_service - INFO - Loading forward translation model for fr...
+2025-05-28 21:50:14,369 - services.nlp_service - INFO - Loaded forward translation model for fr
+2025-05-28 21:50:14,369 - services.nlp_service - INFO - Loading reverse translation model for fr...
+2025-05-28 21:50:16,201 - services.nlp_service - INFO - Loaded reverse translation model for fr
+2025-05-28 21:50:16,202 - services.nlp_service - INFO - Loading forward translation model for es...
+2025-05-28 21:50:18,042 - services.nlp_service - INFO - Loaded forward translation model for es
+2025-05-28 21:50:18,043 - services.nlp_service - INFO - Loading reverse translation model for es...
+2025-05-28 21:50:19,920 - services.nlp_service - INFO - Loaded reverse translation model for es
+2025-05-28 21:50:19,921 - services.nlp_service - INFO - Loading forward translation model for de...
+2025-05-28 21:50:21,717 - services.nlp_service - INFO - Loaded forward translation model for de
+2025-05-28 21:50:21,718 - services.nlp_service - INFO - Loading reverse translation model for de...
+2025-05-28 21:50:23,552 - services.nlp_service - INFO - Loaded reverse translation model for de
+2025-05-28 21:50:23,552 - services.nlp_service - INFO - Loading forward translation model for zh...
+2025-05-28 21:50:25,409 - services.nlp_service - INFO - Loaded forward translation model for zh
+2025-05-28 21:50:25,409 - services.nlp_service - INFO - Loading reverse translation model for zh...
+2025-05-28 21:50:27,257 - services.nlp_service - INFO - Loaded reverse translation model for zh
+2025-05-28 21:50:27,258 - services.nlp_service - INFO - Loading forward translation model for ja...
+2025-05-28 21:50:29,072 - services.nlp_service - INFO - Loaded forward translation model for ja
+2025-05-28 21:50:29,072 - services.nlp_service - INFO - Loading reverse translation model for ja...
+2025-05-28 21:50:30,974 - services.nlp_service - INFO - Loaded reverse translation model for ja
+2025-05-28 21:50:30,975 - services.nlp_service - INFO - Loading forward translation model for ko...
+2025-05-28 21:50:31,072 - services.nlp_service - WARNING - Failed to load translation models for ko: Helsinki-NLP/opus-mt-en-kor is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `huggingface-cli login` or by passing `token=<your_token>`
+2025-05-28 21:50:31,074 - services.nlp_service - WARNING - Traceback: Traceback (most recent call last):
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\utils\_http.py", line 409, in hf_raise_for_status
+    response.raise_for_status()
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\requests\models.py", line 1024, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 401 Client Error: Unauthorized for url: https://huggingface.co/Helsinki-NLP/opus-mt-en-kor/resolve/main/tokenizer_config.json
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\transformers\utils\hub.py", line 398, in cached_file
+    resolved_file = hf_hub_download(
+                    ^^^^^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\utils\_validators.py", line 114, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\file_download.py", line 1008, in hf_hub_download
+    return _hf_hub_download_to_cache_dir(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\file_download.py", line 1115, in _hf_hub_download_to_cache_dir
+    _raise_on_head_call_error(head_call_error, force_download, local_files_only)
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\file_download.py", line 1643, in _raise_on_head_call_error
+    raise head_call_error
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\file_download.py", line 1531, in _get_metadata_or_catch_error
+    metadata = get_hf_file_metadata(
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\utils\_validators.py", line 114, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\file_download.py", line 1448, in get_hf_file_metadata
+    r = _request_wrapper(
+        ^^^^^^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\file_download.py", line 286, in _request_wrapper
+    response = _request_wrapper(
+               ^^^^^^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\file_download.py", line 310, in _request_wrapper
+    hf_raise_for_status(response)
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\utils\_http.py", line 459, in hf_raise_for_status
+    raise _format(RepositoryNotFoundError, message, response) from e
+huggingface_hub.errors.RepositoryNotFoundError: 401 Client Error. (Request ID: Root=1-683737cf-6ac380d541d0cf2005869c9d;f5ba345a-8191-46e7-9a68-ebb21cd89b55)
+
+Repository Not Found for url: https://huggingface.co/Helsinki-NLP/opus-mt-en-kor/resolve/main/tokenizer_config.json.
+Please make sure you specified the correct `repo_id` and `repo_type`.
+If you are trying to access a private or gated repo, make sure you are authenticated. For more details, see https://huggingface.co/docs/huggingface_hub/authentication
+Invalid username or password.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "c:\Users\Srinivasa Dixit\MOM\services\nlp_service.py", line 297, in _initialize_translation_models
+    tokenizer = AutoTokenizer.from_pretrained(models["en-to-lang"])
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\transformers\models\auto\tokenization_auto.py", line 767, in from_pretrained
+    tokenizer_config = get_tokenizer_config(pretrained_model_name_or_path, **kwargs)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\transformers\models\auto\tokenization_auto.py", line 600, in get_tokenizer_config
+    resolved_config_file = cached_file(
+                           ^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\transformers\utils\hub.py", line 421, in cached_file
+    raise EnvironmentError(
+OSError: Helsinki-NLP/opus-mt-en-kor is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `huggingface-cli login` or by passing `token=<your_token>`
+
+2025-05-28 21:50:31,081 - services.nlp_service - INFO - Loading forward translation model for ar...
+2025-05-28 21:50:33,087 - services.nlp_service - INFO - Loaded forward translation model for ar
+2025-05-28 21:50:33,088 - services.nlp_service - INFO - Loading reverse translation model for ar...
+2025-05-28 21:50:35,073 - services.nlp_service - INFO - Loaded reverse translation model for ar
+2025-05-28 21:50:35,579 - __main__ - INFO - Application initialized successfully
+2025-05-28 21:50:35,579 - __main__ - INFO - Starting application server...
+2025-05-28 21:50:35,585 - werkzeug - INFO -  * Restarting with stat
+2025-05-28 21:50:41,417 - services.audio_service - INFO - Initializing AudioService
+2025-05-28 21:50:42,437 - engineio.server - INFO - Server initialized for eventlet.
+2025-05-28 21:50:45,000 - services.audio_service - INFO - Initializing AudioService
+2025-05-28 21:50:45,004 - services.transcription_service - INFO - Limited GPU memory detected, using CPU for better stability
+2025-05-28 21:50:45,005 - services.transcription_service - INFO - Using device: cpu
+2025-05-28 21:50:45,006 - services.transcription_service - INFO - Initializing Whisper model with configuration: base
+2025-05-28 21:50:46,105 - services.transcription_service - INFO - Whisper model initialized successfully
+2025-05-28 21:50:46,106 - services.audio_service - INFO - Initializing AudioService
+2025-05-28 21:50:46,107 - services.nlp_service - INFO - Initializing NLPService
+2025-05-28 21:50:46,110 - services.nlp_service - INFO - GPU Memory: 4.00 GB
+2025-05-28 21:50:46,111 - services.nlp_service - INFO - System Memory: 15.80 GB
+2025-05-28 21:50:46,111 - services.nlp_service - INFO - Limited resources detected, using CPU for better stability
+2025-05-28 21:50:46,112 - services.nlp_service - INFO - Using device: cpu
+2025-05-28 21:50:46,112 - services.nlp_service - INFO - Loading summarization model...
+2025-05-28 21:50:47,768 - services.nlp_service - INFO - Summarization model initialized successfully
+2025-05-28 21:50:47,768 - services.nlp_service - INFO - Loading forward translation model for hi...
+2025-05-28 21:50:49,839 - services.nlp_service - INFO - Loaded forward translation model for hi
+2025-05-28 21:50:49,839 - services.nlp_service - INFO - Loading reverse translation model for hi...
+2025-05-28 21:50:51,811 - services.nlp_service - INFO - Loaded reverse translation model for hi
+2025-05-28 21:50:51,812 - services.nlp_service - INFO - Loading forward translation model for fr...
+2025-05-28 21:50:53,895 - services.nlp_service - INFO - Loaded forward translation model for fr
+2025-05-28 21:50:53,896 - services.nlp_service - INFO - Loading reverse translation model for fr...
+2025-05-28 21:50:56,020 - services.nlp_service - INFO - Loaded reverse translation model for fr
+2025-05-28 21:50:56,021 - services.nlp_service - INFO - Loading forward translation model for es...
+2025-05-28 21:50:58,295 - services.nlp_service - INFO - Loaded forward translation model for es
+2025-05-28 21:50:58,296 - services.nlp_service - INFO - Loading reverse translation model for es...
+2025-05-28 21:51:00,560 - services.nlp_service - INFO - Loaded reverse translation model for es
+2025-05-28 21:51:00,560 - services.nlp_service - INFO - Loading forward translation model for de...
+2025-05-28 21:51:02,637 - services.nlp_service - INFO - Loaded forward translation model for de
+2025-05-28 21:51:02,637 - services.nlp_service - INFO - Loading reverse translation model for de...
+2025-05-28 21:54:11,431 - services.audio_service - INFO - Initializing AudioService
+2025-05-28 21:54:12,467 - engineio.server - INFO - Server initialized for eventlet.
+2025-05-28 21:54:14,994 - services.audio_service - INFO - Initializing AudioService
+2025-05-28 21:54:14,994 - services.transcription_service - INFO - Using device: cpu
+2025-05-28 21:54:14,995 - services.transcription_service - INFO - Initializing Whisper model with configuration: tiny
+2025-05-28 21:54:18,782 - services.transcription_service - INFO - Whisper model initialized successfully
+2025-05-28 21:54:18,783 - services.audio_service - INFO - Initializing AudioService
+2025-05-28 21:54:18,783 - services.nlp_service - INFO - Initializing NLPService
+2025-05-28 21:54:18,784 - services.nlp_service - INFO - Using device: cpu
+2025-05-28 21:54:18,784 - services.nlp_service - INFO - Loading summarization model...
+2025-05-28 21:54:19,997 - services.nlp_service - INFO - Summarization model initialized successfully
+2025-05-28 21:54:19,998 - services.nlp_service - INFO - Loading forward translation model for hi...
+2025-05-28 21:54:21,893 - services.nlp_service - INFO - Loaded forward translation model for hi
+2025-05-28 21:54:21,894 - services.nlp_service - INFO - Loading reverse translation model for hi...
+2025-05-28 21:54:24,024 - services.nlp_service - INFO - Loaded reverse translation model for hi
+2025-05-28 21:54:24,024 - services.nlp_service - INFO - Loading forward translation model for fr...
+2025-05-28 21:54:26,257 - services.nlp_service - INFO - Loaded forward translation model for fr
+2025-05-28 21:54:26,257 - services.nlp_service - INFO - Loading reverse translation model for fr...
+2025-05-28 21:54:28,006 - services.nlp_service - INFO - Loaded reverse translation model for fr
+2025-05-28 21:54:28,007 - services.nlp_service - INFO - Loading forward translation model for es...
+2025-05-28 21:54:29,783 - services.nlp_service - INFO - Loaded forward translation model for es
+2025-05-28 21:54:29,784 - services.nlp_service - INFO - Loading reverse translation model for es...
+2025-05-28 21:54:31,537 - services.nlp_service - INFO - Loaded reverse translation model for es
+2025-05-28 21:54:31,538 - services.nlp_service - INFO - Loading forward translation model for de...
+2025-05-28 21:54:33,286 - services.nlp_service - INFO - Loaded forward translation model for de
+2025-05-28 21:54:33,286 - services.nlp_service - INFO - Loading reverse translation model for de...
+2025-05-28 21:54:35,199 - services.nlp_service - INFO - Loaded reverse translation model for de
+2025-05-28 21:54:35,200 - services.nlp_service - INFO - Loading forward translation model for zh...
+2025-05-28 21:54:37,100 - services.nlp_service - INFO - Loaded forward translation model for zh
+2025-05-28 21:54:37,101 - services.nlp_service - INFO - Loading reverse translation model for zh...
+2025-05-28 21:54:38,997 - services.nlp_service - INFO - Loaded reverse translation model for zh
+2025-05-28 21:54:38,997 - services.nlp_service - INFO - Loading forward translation model for ja...
+2025-05-28 21:54:40,887 - services.nlp_service - INFO - Loaded forward translation model for ja
+2025-05-28 21:54:40,887 - services.nlp_service - INFO - Loading reverse translation model for ja...
+2025-05-28 21:54:42,975 - services.nlp_service - INFO - Loaded reverse translation model for ja
+2025-05-28 21:54:42,975 - services.nlp_service - INFO - Loading forward translation model for ko...
+2025-05-28 21:54:43,079 - services.nlp_service - WARNING - Failed to load translation models for ko: Helsinki-NLP/opus-mt-en-kor is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `huggingface-cli login` or by passing `token=<your_token>`
+2025-05-28 21:54:43,086 - services.nlp_service - WARNING - Traceback: Traceback (most recent call last):
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\utils\_http.py", line 409, in hf_raise_for_status
+    response.raise_for_status()
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\requests\models.py", line 1024, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 401 Client Error: Unauthorized for url: https://huggingface.co/Helsinki-NLP/opus-mt-en-kor/resolve/main/tokenizer_config.json
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\transformers\utils\hub.py", line 398, in cached_file
+    resolved_file = hf_hub_download(
+                    ^^^^^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\utils\_validators.py", line 114, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\file_download.py", line 1008, in hf_hub_download
+    return _hf_hub_download_to_cache_dir(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\file_download.py", line 1115, in _hf_hub_download_to_cache_dir
+    _raise_on_head_call_error(head_call_error, force_download, local_files_only)
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\file_download.py", line 1643, in _raise_on_head_call_error
+    raise head_call_error
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\file_download.py", line 1531, in _get_metadata_or_catch_error
+    metadata = get_hf_file_metadata(
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\utils\_validators.py", line 114, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\file_download.py", line 1448, in get_hf_file_metadata
+    r = _request_wrapper(
+        ^^^^^^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\file_download.py", line 286, in _request_wrapper
+    response = _request_wrapper(
+               ^^^^^^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\file_download.py", line 310, in _request_wrapper
+    hf_raise_for_status(response)
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\utils\_http.py", line 459, in hf_raise_for_status
+    raise _format(RepositoryNotFoundError, message, response) from e
+huggingface_hub.errors.RepositoryNotFoundError: 401 Client Error. (Request ID: Root=1-683738cb-22be6127357156483b017ccf;ab641b8d-70b7-4e26-8cfd-b7b98fea17ad)
+
+Repository Not Found for url: https://huggingface.co/Helsinki-NLP/opus-mt-en-kor/resolve/main/tokenizer_config.json.
+Please make sure you specified the correct `repo_id` and `repo_type`.
+If you are trying to access a private or gated repo, make sure you are authenticated. For more details, see https://huggingface.co/docs/huggingface_hub/authentication
+Invalid username or password.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "c:\Users\Srinivasa Dixit\MOM\services\nlp_service.py", line 293, in _initialize_translation_models
+    tokenizer = AutoTokenizer.from_pretrained(models["en-to-lang"])
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\transformers\models\auto\tokenization_auto.py", line 767, in from_pretrained
+    tokenizer_config = get_tokenizer_config(pretrained_model_name_or_path, **kwargs)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\transformers\models\auto\tokenization_auto.py", line 600, in get_tokenizer_config
+    resolved_config_file = cached_file(
+                           ^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\transformers\utils\hub.py", line 421, in cached_file
+    raise EnvironmentError(
+OSError: Helsinki-NLP/opus-mt-en-kor is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `huggingface-cli login` or by passing `token=<your_token>`
+
+2025-05-28 21:54:43,093 - services.nlp_service - INFO - Loading forward translation model for ar...
+2025-05-28 21:54:45,002 - services.nlp_service - INFO - Loaded forward translation model for ar
+2025-05-28 21:54:45,003 - services.nlp_service - INFO - Loading reverse translation model for ar...
+2025-05-28 21:54:46,884 - services.nlp_service - INFO - Loaded reverse translation model for ar
+2025-05-28 21:54:47,440 - services.nlp_service - INFO - Initializing NLPService
+2025-05-28 21:54:47,440 - services.nlp_service - INFO - Using device: cpu
+2025-05-28 21:54:47,440 - services.nlp_service - INFO - Loading summarization model...
+2025-05-28 21:54:48,508 - services.nlp_service - INFO - Summarization model initialized successfully
+2025-05-28 21:54:48,508 - services.nlp_service - INFO - Loading forward translation model for hi...
+2025-05-28 21:54:50,299 - services.nlp_service - INFO - Loaded forward translation model for hi
+2025-05-28 21:54:50,300 - services.nlp_service - INFO - Loading reverse translation model for hi...
+2025-05-28 21:54:52,118 - services.nlp_service - INFO - Loaded reverse translation model for hi
+2025-05-28 21:54:52,119 - services.nlp_service - INFO - Loading forward translation model for fr...
+2025-05-28 21:54:53,899 - services.nlp_service - INFO - Loaded forward translation model for fr
+2025-05-28 21:54:53,899 - services.nlp_service - INFO - Loading reverse translation model for fr...
+2025-05-28 21:54:55,629 - services.nlp_service - INFO - Loaded reverse translation model for fr
+2025-05-28 21:54:55,629 - services.nlp_service - INFO - Loading forward translation model for es...
+2025-05-28 21:54:57,442 - services.nlp_service - INFO - Loaded forward translation model for es
+2025-05-28 21:54:57,443 - services.nlp_service - INFO - Loading reverse translation model for es...
+2025-05-28 21:54:59,232 - services.nlp_service - INFO - Loaded reverse translation model for es
+2025-05-28 21:54:59,232 - services.nlp_service - INFO - Loading forward translation model for de...
+2025-05-28 21:55:01,027 - services.nlp_service - INFO - Loaded forward translation model for de
+2025-05-28 21:55:01,028 - services.nlp_service - INFO - Loading reverse translation model for de...
+2025-05-28 21:55:02,931 - services.nlp_service - INFO - Loaded reverse translation model for de
+2025-05-28 21:55:02,932 - services.nlp_service - INFO - Loading forward translation model for zh...
+2025-05-28 21:55:04,911 - services.nlp_service - INFO - Loaded forward translation model for zh
+2025-05-28 21:55:04,912 - services.nlp_service - INFO - Loading reverse translation model for zh...
+2025-05-28 21:55:06,890 - services.nlp_service - INFO - Loaded reverse translation model for zh
+2025-05-28 21:55:06,891 - services.nlp_service - INFO - Loading forward translation model for ja...
+2025-05-28 21:55:09,028 - services.nlp_service - INFO - Loaded forward translation model for ja
+2025-05-28 21:55:09,029 - services.nlp_service - INFO - Loading reverse translation model for ja...
+2025-05-28 21:55:11,279 - services.nlp_service - INFO - Loaded reverse translation model for ja
+2025-05-28 21:55:11,279 - services.nlp_service - INFO - Loading forward translation model for ko...
+2025-05-28 21:55:11,417 - services.nlp_service - WARNING - Failed to load translation models for ko: Helsinki-NLP/opus-mt-en-kor is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `huggingface-cli login` or by passing `token=<your_token>`
+2025-05-28 21:55:11,420 - services.nlp_service - WARNING - Traceback: Traceback (most recent call last):
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\utils\_http.py", line 409, in hf_raise_for_status
+    response.raise_for_status()
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\requests\models.py", line 1024, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 401 Client Error: Unauthorized for url: https://huggingface.co/Helsinki-NLP/opus-mt-en-kor/resolve/main/tokenizer_config.json
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\transformers\utils\hub.py", line 398, in cached_file
+    resolved_file = hf_hub_download(
+                    ^^^^^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\utils\_validators.py", line 114, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\file_download.py", line 1008, in hf_hub_download
+    return _hf_hub_download_to_cache_dir(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\file_download.py", line 1115, in _hf_hub_download_to_cache_dir
+    _raise_on_head_call_error(head_call_error, force_download, local_files_only)
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\file_download.py", line 1643, in _raise_on_head_call_error
+    raise head_call_error
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\file_download.py", line 1531, in _get_metadata_or_catch_error
+    metadata = get_hf_file_metadata(
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\utils\_validators.py", line 114, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\file_download.py", line 1448, in get_hf_file_metadata
+    r = _request_wrapper(
+        ^^^^^^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\file_download.py", line 286, in _request_wrapper
+    response = _request_wrapper(
+               ^^^^^^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\file_download.py", line 310, in _request_wrapper
+    hf_raise_for_status(response)
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\huggingface_hub\utils\_http.py", line 459, in hf_raise_for_status
+    raise _format(RepositoryNotFoundError, message, response) from e
+huggingface_hub.errors.RepositoryNotFoundError: 401 Client Error. (Request ID: Root=1-683738e7-5567db6d2e991f985f5a22e2;4007239e-fa2e-402f-bd99-e7c5eb55f0c4)
+
+Repository Not Found for url: https://huggingface.co/Helsinki-NLP/opus-mt-en-kor/resolve/main/tokenizer_config.json.
+Please make sure you specified the correct `repo_id` and `repo_type`.
+If you are trying to access a private or gated repo, make sure you are authenticated. For more details, see https://huggingface.co/docs/huggingface_hub/authentication
+Invalid username or password.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "c:\Users\Srinivasa Dixit\MOM\services\nlp_service.py", line 293, in _initialize_translation_models
+    tokenizer = AutoTokenizer.from_pretrained(models["en-to-lang"])
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\transformers\models\auto\tokenization_auto.py", line 767, in from_pretrained
+    tokenizer_config = get_tokenizer_config(pretrained_model_name_or_path, **kwargs)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\transformers\models\auto\tokenization_auto.py", line 600, in get_tokenizer_config
+    resolved_config_file = cached_file(
+                           ^^^^^^^^^^^^
+  File "C:\Users\Srinivasa Dixit\MOM\venv\Lib\site-packages\transformers\utils\hub.py", line 421, in cached_file
+    raise EnvironmentError(
+OSError: Helsinki-NLP/opus-mt-en-kor is not a local folder and is not a valid model identifier listed on 'https://huggingface.co/models'
+If this is a private repository, make sure to pass a token having permission to this repo either by logging in with `huggingface-cli login` or by passing `token=<your_token>`
+
+2025-05-28 21:55:11,427 - services.nlp_service - INFO - Loading forward translation model for ar...
+2025-05-28 21:55:13,871 - services.nlp_service - INFO - Loaded forward translation model for ar
+2025-05-28 21:55:13,872 - services.nlp_service - INFO - Loading reverse translation model for ar...
+2025-05-28 21:55:17,356 - services.nlp_service - INFO - Loaded reverse translation model for ar
+2025-05-28 21:55:17,856 - __main__ - INFO - Application initialized successfully
+2025-05-28 21:55:17,857 - __main__ - INFO - Starting application server...
+2025-05-28 21:55:17,860 - werkzeug - INFO -  * Restarting with stat
+2025-05-28 21:55:24,079 - services.audio_service - INFO - Initializing AudioService
+2025-05-28 21:55:25,063 - engineio.server - INFO - Server initialized for eventlet.
+2025-05-28 21:55:27,497 - services.audio_service - INFO - Initializing AudioService
+2025-05-28 21:55:27,498 - services.transcription_service - INFO - Using device: cpu
+2025-05-28 21:55:27,499 - services.transcription_service - INFO - Initializing Whisper model with configuration: tiny
+2025-05-28 21:55:28,090 - services.transcription_service - INFO - Whisper model initialized successfully
+2025-05-28 21:55:28,091 - services.audio_service - INFO - Initializing AudioService
+2025-05-28 21:55:28,092 - services.nlp_service - INFO - Initializing NLPService
+2025-05-28 21:55:28,092 - services.nlp_service - INFO - Using device: cpu
+2025-05-28 21:55:28,092 - services.nlp_service - INFO - Loading summarization model...
+2025-05-28 21:55:29,495 - services.nlp_service - INFO - Summarization model initialized successfully
+2025-05-28 21:55:29,495 - services.nlp_service - INFO - Loading forward translation model for hi...
+2025-05-28 21:55:31,432 - services.nlp_service - INFO - Loaded forward translation model for hi
+2025-05-28 21:55:31,433 - services.nlp_service - INFO - Loading reverse translation model for hi...
+2025-05-28 21:55:33,385 - services.nlp_service - INFO - Loaded reverse translation model for hi
+2025-05-28 21:55:33,386 - services.nlp_service - INFO - Loading forward translation model for fr...
+2025-05-28 21:55:35,362 - services.nlp_service - INFO - Loaded forward translation model for fr
+2025-05-28 21:55:35,363 - services.nlp_service - INFO - Loading reverse translation model for fr...
+2025-05-28 21:55:37,798 - services.nlp_service - INFO - Loaded reverse translation model for fr
+2025-05-28 21:55:37,799 - services.nlp_service - INFO - Loading forward translation model for es...
+2025-05-28 21:55:39,861 - services.nlp_service - INFO - Loaded forward translation model for es
+2025-05-28 21:55:39,861 - services.nlp_service - INFO - Loading reverse translation model for es...
+2025-05-28 21:55:42,123 - services.nlp_service - INFO - Loaded reverse translation model for es
+2025-05-28 21:55:42,124 - services.nlp_service - INFO - Loading forward translation model for de...
+2025-05-28 21:55:44,148 - services.nlp_service - INFO - Loaded forward translation model for de
+2025-05-28 21:55:44,148 - services.nlp_service - INFO - Loading reverse translation model for de...
+2025-05-28 21:55:46,152 - services.nlp_service - INFO - Loaded reverse translation model for de
+2025-05-28 21:55:46,152 - services.nlp_service - INFO - Loading forward translation model for zh...

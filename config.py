@@ -4,20 +4,29 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class Config:
+    # Base directory
+    BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+    
     # Flask configuration
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-key-please-change-in-production'
+    SECRET_KEY = os.environ.get('SECRET_KEY', 'your-secret-key-here')
     
     # MongoDB configuration
     MONGODB_URI = os.environ.get('MONGODB_URI') or 'mongodb://localhost:27017/'
     DB_NAME = os.environ.get('DB_NAME') or 'mom_db'
     
     # Audio configuration
-    UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
-    ALLOWED_AUDIO_EXTENSIONS = {'mp3', 'wav', 'm4a', 'ogg'}
-    MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB max file size
+    UPLOAD_FOLDER = os.path.join(BASE_DIR, "uploads")
+    ALLOWED_AUDIO_EXTENSIONS = {'wav', 'mp3', 'ogg', 'flac', 'm4a'}
+    MAX_AUDIO_SIZE = 50 * 1024 * 1024  # 50MB
+    MAX_CONTENT_LENGTH = MAX_AUDIO_SIZE
     
-    # Whisper configuration
-    WHISPER_MODEL = "base"  # Can be tiny, base, small, medium, or large
+    # Whisper configuration - using smaller model for CPU
+    WHISPER_MODEL = "tiny"  # Using tiny model for better CPU performance
+    MODEL_CACHE_DIR = os.path.join(BASE_DIR, "model_cache")
+    
+    # Model configuration
+    USE_CPU = True  # Force CPU usage
+    MODEL_PRECISION = "float32"  # Use FP32 for CPU
     
     # Socket.IO configuration
     SOCKETIO_ASYNC_MODE = 'eventlet'
@@ -31,4 +40,7 @@ class Config:
         
         # Ensure the upload folder is writable
         if not os.access(Config.UPLOAD_FOLDER, os.W_OK):
-            raise RuntimeError(f"Upload folder {Config.UPLOAD_FOLDER} is not writable") 
+            raise RuntimeError(f"Upload folder {Config.UPLOAD_FOLDER} is not writable")
+        
+        # Ensure model cache directory exists
+        os.makedirs(Config.MODEL_CACHE_DIR, exist_ok=True) 

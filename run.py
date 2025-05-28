@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+    #!/usr/bin/env python3
 """
 Main entry point for the MOM (Minutes of Meeting) application.
 Handles application startup, shutdown, and signal management.
@@ -15,6 +15,7 @@ from flask import Flask
 from werkzeug.serving import is_running_from_reloader
 from app import create_app, socketio
 from services.audio_service import AudioService
+from transformers import pipeline
 
 # Configure logging
 logging.basicConfig(
@@ -130,8 +131,6 @@ class ApplicationManager:
             logger.info("Audio service cleaned up successfully")
         except Exception as e:
             logger.error("Error cleaning up audio service: %s", str(e))
-        
-        # Additional cleanup can be added here
     
     def run(self) -> None:
         """Run the Flask application."""
@@ -144,23 +143,14 @@ class ApplicationManager:
                 debug=True,
                 host='0.0.0.0',
                 port=8081,
-                allow_unsafe_werkzeug=True,
-                use_reloader=True
+                allow_unsafe_werkzeug=True
             )
             
         except Exception as e:
             logger.error("Error running application: %s", str(e))
             self.initiate_shutdown()
 
-def main():
-    """Main entry point of the application."""
-    try:
-        app_manager = ApplicationManager()
-        app_manager.initialize()
-        app_manager.run()
-    except Exception as e:
-        logger.critical("Fatal error: %s", str(e))
-        sys.exit(1)
-
 if __name__ == '__main__':
-    main() 
+    app_manager = ApplicationManager()
+    app_manager.initialize()
+    app_manager.run() 
