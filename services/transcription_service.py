@@ -1,122 +1,190 @@
-import whisper
+import whisper 
 import numpy as np
-from config import Config
-import soundfile as sf
-import io
 import logging
+from transformers import pipeline
+from scipy import signal
+import torch
+import textwrap
+from config import Config
+from services.nlp_service import NLPService
+import sys
+from .audio_service import AudioService
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
+# Configure logging with UTF-8 support
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+console_handler = logging.StreamHandler(sys.stdout)
+console_handler.setLevel(logging.INFO)
+console_formatter = logging.Formatter(
+    '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+console_handler.setFormatter(console_formatter)
+
+if not logger.hasHandlers():
+    logger.addHandler(console_handler)
+else:
+    logger.handlers.clear()
+    logger.addHandler(console_handler)
+
+def chunk_text(text, max_len=450):
+    """
+    Split text into chunks of at most max_len characters, respecting word boundaries.
+    Returns a list of text chunks.
+    """
+    return textwrap.wrap(text, max_len)
 
 class TranscriptionService:
     def __init__(self):
         try:
+            # Force CPU usage
+            self.device = "cpu"
+            logger.info(f"Using device: {self.device}")
+            
+            # Initialize Whisper with CPU device
             logger.info(f"Initializing Whisper model with configuration: {Config.WHISPER_MODEL}")
-            self.model = whisper.load_model(Config.WHISPER_MODEL)
+            self.model = whisper.load_model(
+                Config.WHISPER_MODEL,
+                device=self.device,
+                download_root=Config.MODEL_CACHE_DIR
+            )
             logger.info("Whisper model initialized successfully")
+            
+            self.audio_service = AudioService()
+            self.nlp_service = NLPService()
+            
         except Exception as e:
-            logger.error(f"Failed to initialize Whisper model: {str(e)}")
+            logger.error(f"Failed to initialize TranscriptionService: {str(e)}")
             raise
-    
-    def transcribe_file(self, audio_path):
-        """Transcribe an entire audio file."""
+
+    def transcribe_file(self, audio_path, target_language='hi'):
+        """
+        Transcribe an audio file and process the results
+        """
         try:
             logger.info(f"Starting transcription of file: {audio_path}")
             
-            # Verify file exists and is readable
-            try:
-                with open(audio_path, 'rb') as f:
-                    pass
-            except Exception as e:
-                logger.error(f"Cannot read audio file {audio_path}: {str(e)}")
-                raise ValueError(f"Cannot read audio file: {str(e)}")
+            # Transcribe using CPU
+            result = self.model.transcribe(
+                audio_path,
+                task="transcribe",
+                fp16=False  # Disable FP16 since we're using CPU
+            )
+            detected_lang = result.get("language", "en")
+            transcribed_text = result["text"].strip()
+            logger.info(f"Detected language: {detected_lang}")
             
-            # Perform transcription
-            result = self.model.transcribe(audio_path)
-            
-            if not result or "text" not in result:
-                logger.error("Transcription result is invalid")
-                raise ValueError("Invalid transcription result")
-                
-            logger.info("File transcription completed successfully")
-            return result["text"]
-            
+            return self._process_transcription(
+                transcribed_text, 
+                detected_lang, 
+                target_language
+            )
+
         except Exception as e:
             logger.error(f"Error transcribing file: {str(e)}")
             import traceback
             logger.error(f"Traceback: {traceback.format_exc()}")
             raise
-    
-    def transcribe_chunk(self, audio_data, sample_rate=None):
-        """Transcribe a chunk of audio data."""
+
+    def transcribe_chunk(self, audio_data, target_language='hi', sample_rate=None):
+        """
+        Transcribe an audio chunk and process the results
+        """
         try:
-            logger.info(f"Starting transcription of audio chunk, sample rate: {sample_rate}")
-            logger.debug(f"Audio data type: {type(audio_data)}, length: {len(audio_data) if hasattr(audio_data, '__len__') else 'unknown'}")
+            logger.info("Starting transcription of audio chunk")
             
-            # Handle different input types
-            if isinstance(audio_data, (bytes, bytearray, memoryview)):
-                logger.debug("Converting bytes to numpy array")
-                audio_array = np.frombuffer(audio_data, dtype=np.float32)
-            elif isinstance(audio_data, np.ndarray):
-                audio_array = audio_data
-            else:
-                error_msg = f"Unsupported audio data type: {type(audio_data)}"
-                logger.error(error_msg)
-                raise ValueError(error_msg)
+            # Preprocess audio data
+            processed_audio = self.audio_service.preprocess_audio(audio_data, sample_rate)
             
-            # Log array properties
-            logger.debug(f"Audio array shape: {audio_array.shape}, dtype: {audio_array.dtype}")
+            # Transcribe using CPU
+            result = self.model.transcribe(
+                processed_audio,
+                task="transcribe",
+                fp16=False  # Disable FP16 since we're using CPU
+            )
+            detected_lang = result.get("language", "en")
+            transcribed_text = result["text"].strip()
+            logger.info(f"Detected language: {detected_lang}")
             
-            # Ensure we have a contiguous array in the correct format
-            audio_array = np.ascontiguousarray(audio_array, dtype=np.float32)
-            
-            # Check for invalid values
-            if np.isnan(audio_array).any():
-                logger.error("Audio array contains NaN values")
-                raise ValueError("Audio array contains NaN values")
-            
-            if np.isinf(audio_array).any():
-                logger.error("Audio array contains infinite values")
-                raise ValueError("Audio array contains infinite values")
-            
-            # Normalize audio (only if it's not already normalized)
-            max_val = np.max(np.abs(audio_array))
-            if max_val > 1.0:
-                logger.debug(f"Normalizing audio array with max value: {max_val}")
-                audio_array = audio_array / max_val
-            
-            # Resample if needed (Whisper expects 16kHz)
-            if sample_rate and sample_rate != 16000:
-                logger.debug(f"Resampling audio from {sample_rate}Hz to 16000Hz")
-                from scipy import signal
-                audio_array = signal.resample(audio_array, 
-                                           int(len(audio_array) * 16000 / sample_rate))
-            
-            # Ensure minimum duration (Whisper typically expects at least 30ms of audio)
-            min_samples = int(16000 * 0.03)  # 30ms at 16kHz
-            if len(audio_array) < min_samples:
-                logger.debug(f"Padding audio array to minimum length: {min_samples} samples")
-                audio_array = np.pad(audio_array, (0, min_samples - len(audio_array)))
-            
-            # Log final array properties before transcription
-            logger.debug(f"Final audio array shape: {audio_array.shape}, min: {np.min(audio_array)}, max: {np.max(audio_array)}")
-            
-            # Transcribe the audio chunk
-            result = self.model.transcribe(audio_array)
-            
-            if not result or "text" not in result:
-                logger.error("Transcription result is invalid")
-                raise ValueError("Invalid transcription result")
-            
-            logger.info("Chunk transcription completed successfully")
-            return result["text"]
-            
+            return self._process_transcription(
+                transcribed_text, 
+                detected_lang, 
+                target_language
+            )
+
         except Exception as e:
             logger.error(f"Error transcribing chunk: {str(e)}")
             import traceback
             logger.error(f"Traceback: {traceback.format_exc()}")
-            return None 
+            return None
+
+    def _process_transcription(self, transcribed_text, detected_lang, target_language):
+        """
+        Process transcribed text: translate if needed and generate summaries
+        """
+        try:
+            # If the detected language is not English, first translate to English
+            english_text = transcribed_text
+            if detected_lang != "en":
+                logger.info(f"Translating from {detected_lang} to English")
+                english_text = self.nlp_service.translate_to_english(transcribed_text, detected_lang)
+
+            # Generate summary and extract action items from English text
+            summary = self.nlp_service.generate_summary(english_text)
+            action_items = self.nlp_service.extract_action_items(english_text)
+
+            # Translate to target language if needed
+            translated_text = english_text
+            if target_language != "en":
+                translated_text = self.nlp_service.translate_to_language(english_text, target_language)
+                
+                # Translate summary and action items
+                if summary['english']:
+                    summary['translated'] = self.nlp_service.translate_to_language(
+                        summary['english'], 
+                        target_language
+                    )
+                    summary['translated_topic_summaries'] = [
+                        self.nlp_service.translate_to_language(topic, target_language)
+                        for topic in summary.get('topic_summaries', [])
+                    ]
+                    summary['translated_key_points'] = [
+                        self.nlp_service.translate_to_language(point, target_language)
+                        for point in summary.get('key_points', [])
+                    ]
+
+                # Translate action items
+                for item in action_items:
+                    if item.get('text'):
+                        item['translated_text'] = self.nlp_service.translate_to_language(
+                            item['text'], 
+                            target_language
+                        )
+
+            return {
+                "original": transcribed_text,
+                "english": english_text,
+                "translated": translated_text,
+                "target_language": target_language,
+                "summary": summary,
+                "action_items": action_items,
+                "detected_language": detected_lang
+            }
+
+        except Exception as e:
+            logger.error(f"Error processing transcription: {str(e)}")
+            return {
+                "original": transcribed_text,
+                "english": english_text,
+                "translated": transcribed_text,
+                "target_language": target_language,
+                "summary": {"english": "", "translated": "", "topic_summaries": [], "key_points": []},
+                "action_items": [],
+                "detected_language": detected_lang
+            }
+
+    def get_supported_languages(self):
+        """
+        Get list of supported languages for translation
+        """
+        return self.nlp_service.get_supported_languages()
