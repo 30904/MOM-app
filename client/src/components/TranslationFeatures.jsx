@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { FaCopy } from 'react-icons/fa';
 
 const TranslationFeatures = () => {
-  const [originalText, setOriginalText] = useState('Hello, this is a meeting summary.');
-  const [translatedText, setTranslatedText] = useState('नमस्ते, ही एक बैठक सारांश आहे.');
-  const [language, setLanguage] = useState('Marathi');
+  const originalText = 'Hello, this is a meeting summary.';
+  const translatedText = 'नमस्ते, ही एक बैठक सारांश आहे.';
+  const [language, setLanguage] = React.useState('Marathi');
 
   const languages = [
     { name: 'Marathi', flag: '🇮🇳' },
