@@ -2,14 +2,16 @@ import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
+import RecordingInterface from './components/RecordingInterface';
 import TranscriptionDisplay from './components/TranscriptionDisplay';
+import ActionItemsSection from './components/ActionItemsSection';
+import TranslationFeatures from './components/TranslationFeatures';
 import SummarySection from './components/SummarySection';
 
 const App = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const toggleTheme = () => setIsDarkMode(!isDarkMode);
 
-  // Sample data for testing
   const transcriptions = [
     { timestamp: '00:01', speaker: 'Speaker 1', text: 'Let’s start the meeting.' },
     { timestamp: '00:03', speaker: 'Speaker 2', text: 'Sure, I’ll take notes.' },
@@ -29,15 +31,10 @@ const App = () => {
             <Route path="/" element={<div className="p-4">Dashboard Content</div>} />
             <Route path="/meetings" element={
               <div className="p-4 space-y-4">
-                {/* Placeholder for RecordingInterface (Arnav's task) */}
-                <div className="p-4 bg-gray-200 dark:bg-gray-700 rounded-lg">
-                  <p className="text-gray-500">Recording Interface (To be added by Arnav)</p>
-                </div>
+                <RecordingInterface />
                 <TranscriptionDisplay transcriptions={transcriptions} />
-                {/* Placeholder for ActionItemsSection (Arnav's task) */}
-                <div className="p-4 bg-gray-200 dark:bg-gray-700 rounded-lg">
-                  <p className="text-gray-500">Action Items Section (To be added by Arnav)</p>
-                </div>
+                <ActionItemsSection />
+                <TranslationFeatures />
                 <SummarySection summaries={summaries} />
               </div>
             } />
