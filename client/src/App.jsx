@@ -31,12 +31,12 @@ const App = () => {
     <Router>
       <div className={`flex min-h-screen ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
         <Sidebar />
-        <div className="flex-1 ml-64">
+        <div className="flex-1">
           <Header toggleTheme={toggleTheme} isDarkMode={isDarkMode} />
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/meetings" element={
-              <div className="p-4 space-y-4">
+              <div className="container py-6 space-y-6">
                 <RecordingInterface />
                 <TranscriptionDisplay transcriptions={transcriptions} />
                 <ActionItemsSection />
