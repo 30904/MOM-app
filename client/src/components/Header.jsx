@@ -72,7 +72,7 @@ const Header = ({ toggleTheme, isDarkMode, onLogout }) => {
         <div className="relative">
           <button onClick={() => setIsDropdownOpen(!isDropdownOpen)} className="flex items-center space-x-2">
             <FaUserCircle className="h-8 w-8 text-blue-900" />
-            <span className="text-blue-900 font-medium">Piyush</span>
+            <span className="text-blue-900 font-medium">Arnav</span>
             <FaChevronDown className="h-5 w-5 text-blue-900" />
           </button>
           {isDropdownOpen && (
