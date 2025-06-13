@@ -1,21 +1,36 @@
-import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
-import RecordingInterface from './components/RecordingInterface';
-import TranscriptionDisplay from './components/TranscriptionDisplay';
-import ActionItemsSection from './components/ActionItemsSection';
-import TranslationFeatures from './components/TranslationFeatures';
-import SummarySection from './components/SummarySection';
+import MeetingsPart1 from './components/MeetingsPart1';
+import MeetingsPart2 from './components/MeetingsPart2';
 import Reports from './components/Reports';
-import SmartUpload from './components/SmartUpload';
+import Upload from './components/Upload';
 import History from './components/History';
 import Settings from './components/Settings';
+import Login from './components/Login';
 
 const App = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const toggleTheme = () => setIsDarkMode(!isDarkMode);
+
+  // Check login state on app load
+  useEffect(() => {
+    const loggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    setIsLoggedIn(loggedIn);
+  }, []);
+
+  const handleLogin = () => {
+    setIsLoggedIn(true);
+    localStorage.setItem('isLoggedIn', 'true');
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    localStorage.setItem('isLoggedIn', 'false');
+  };
 
   // Sample data for testing
   const transcriptions = [
@@ -30,25 +45,92 @@ const App = () => {
   return (
     <Router>
       <div className={`flex min-h-screen ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
-        <Sidebar />
+        {/* Conditionally render Sidebar only if logged in */}
+        {isLoggedIn && <Sidebar />}
         <div className="flex-1">
-          <Header toggleTheme={toggleTheme} isDarkMode={isDarkMode} />
+          {/* Conditionally render Header only if logged in */}
+          {isLoggedIn && <Header toggleTheme={toggleTheme} isDarkMode={isDarkMode} onLogout={handleLogout} />}
           <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/meetings" element={
-              <div className="container py-6 space-y-6">
-                <RecordingInterface />
-                <TranscriptionDisplay transcriptions={transcriptions} />
-                <ActionItemsSection />
-                <TranslationFeatures />
-                <SummarySection summaries={summaries} />
-              </div>
-            } />
-            <Route path="/reports" element={<Reports />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/login" element={<div className="p-4">Login Page</div>} />
-            <Route path="/upload" element={<SmartUpload />} />
-            <Route path="/history" element={<History />} />
+            <Route
+              path="/login"
+              element={
+                isLoggedIn ? (
+                  <Navigate to="/" />
+                ) : (
+                  <Login onLogin={handleLogin} />
+                )
+              }
+            />
+            <Route
+              path="/"
+              element={
+                isLoggedIn ? (
+                  <Dashboard />
+                ) : (
+                  <Navigate to="/login" />
+                )
+              }
+            />
+            <Route
+              path="/meetings/part1"
+              element={
+                isLoggedIn ? (
+                  <MeetingsPart1 transcriptions={transcriptions} />
+                ) : (
+                  <Navigate to="/login" />
+                )
+              }
+            />
+            <Route
+              path="/meetings/part2"
+              element={
+                isLoggedIn ? (
+                  <MeetingsPart2 summaries={summaries} />
+                ) : (
+                  <Navigate to="/login" />
+                )
+              }
+            />
+            <Route
+              path="/reports"
+              element={
+                isLoggedIn ? (
+                  <Reports />
+                ) : (
+                  <Navigate to="/login" />
+                )
+              }
+            />
+            <Route
+              path="/settings"
+              element={
+                isLoggedIn ? (
+                  <Settings />
+                ) : (
+                  <Navigate to="/login" />
+                )
+              }
+            />
+            <Route
+              path="/upload"
+              element={
+                isLoggedIn ? (
+                  <Upload />
+                ) : (
+                  <Navigate to="/login" />
+                )
+              }
+            />
+            <Route
+              path="/history"
+              element={
+                isLoggedIn ? (
+                  <History />
+                ) : (
+                  <Navigate to="/login" />
+                )
+              }
+            />
           </Routes>
         </div>
       </div>

@@ -1,92 +1,149 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, memo } from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { FaPlus } from 'react-icons/fa';
 
-const initialTasks = {
-  'To Do': [
-    { id: '1', content: 'Prepare slides', assignee: 'Piyush', dueDate: '2025-06-10', priority: 'high' },
-    { id: '2', content: 'Schedule meeting', assignee: 'Arnav', dueDate: '2025-06-15', priority: 'medium' },
-  ],
-  'In Progress': [],
-  'Completed': [],
+const TaskItem = memo(({ task, index }) => (
+  <Draggable key={task.id} draggableId={task.id} index={index}>
+    {(provided, snapshot) => (
+      <div
+        ref={provided.innerRef}
+        {...provided.draggableProps}
+        {...provided.dragHandleProps}
+        className={`p-2 rounded-lg transition-all duration-200 ${
+          snapshot.isDragging
+            ? 'bg-white shadow-lg scale-105'
+            : 'bg-white hover:shadow-md'
+        }`}
+        style={{
+          ...provided.draggableProps.style,
+          transform: snapshot.isDragging
+            ? provided.draggableProps.style?.transform
+            : 'none',
+        }}
+      >
+        <div className="flex flex-col space-y-1">
+          <p className="text-sm text-gray-700">{task.content}</p>
+          <div className="flex justify-between items-center">
+            <span className={`text-xs px-2 py-0.5 rounded-full ${getPriorityColor(task.priority)}`}>
+              {task.priority}
+            </span>
+            <button className="text-gray-400 hover:text-gray-600">
+              <FaPlus className="h-3 w-3" />
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+  </Draggable>
+));
+
+const Column = memo(({ columnId, tasks, title }) => (
+  <Droppable droppableId={columnId}>
+    {(provided, snapshot) => (
+      <div
+        className={`flex flex-col h-full rounded-lg transition-colors duration-200 ${
+          snapshot.isDraggingOver ? 'bg-blue-50' : 'bg-gray-50'
+        }`}
+        {...provided.droppableProps}
+        ref={provided.innerRef}
+      >
+        <div className="p-2 border-b border-gray-200 bg-white rounded-t-lg">
+          <div className="flex justify-between items-center">
+            <h4 className="text-sm font-medium text-gray-700">{title}</h4>
+            <span className="text-xs text-gray-500">{tasks.length} items</span>
+          </div>
+        </div>
+        <div className="flex-1 p-1.5 space-y-1.5 overflow-y-auto max-h-[calc(100vh-25rem)]">
+          {tasks.map((task, index) => (
+            <TaskItem key={task.id} task={task} index={index} />
+          ))}
+          {provided.placeholder}
+        </div>
+      </div>
+    )}
+  </Droppable>
+));
+
+const getPriorityColor = (priority) => {
+  switch (priority) {
+    case 'high':
+      return 'bg-red-100 text-red-700';
+    case 'medium':
+      return 'bg-yellow-100 text-yellow-700';
+    case 'low':
+      return 'bg-green-100 text-green-700';
+    default:
+      return 'bg-gray-100 text-gray-700';
+  }
+};
+
+const getColumnTitle = (columnId) => {
+  switch (columnId) {
+    case 'todo':
+      return 'To Do';
+    case 'inProgress':
+      return 'In Progress';
+    case 'done':
+      return 'Done';
+    default:
+      return columnId;
+  }
 };
 
 const ActionItemsSection = () => {
-  const [tasks, setTasks] = useState(initialTasks);
+  const [tasks, setTasks] = useState({
+    todo: [
+      { id: 'task-1', content: 'Prepare presentation slides', priority: 'high' },
+      { id: 'task-2', content: 'Schedule follow-up meeting', priority: 'medium' },
+    ],
+    inProgress: [
+      { id: 'task-3', content: 'Draft project timeline', priority: 'high' },
+    ],
+    done: [
+      { id: 'task-4', content: 'Send meeting notes', priority: 'low' },
+    ],
+  });
 
-  const onDragEnd = (result) => {
+  const onDragEnd = useCallback((result) => {
     const { source, destination } = result;
     if (!destination) return;
+    if (source.droppableId === destination.droppableId && source.index === destination.index) return;
 
-    const sourceColumn = source.droppableId;
-    const destColumn = destination.droppableId;
-    const sourceItems = [...tasks[sourceColumn]];
-    const destItems = [...tasks[destColumn]];
-    const [movedItem] = sourceItems.splice(source.index, 1);
-    destItems.splice(destination.index, 0, movedItem);
+    setTasks(prevTasks => {
+      const sourceTasks = [...prevTasks[source.droppableId]];
+      const [movedTask] = sourceTasks.splice(source.index, 1);
+      const destinationTasks = [...prevTasks[destination.droppableId]];
+      destinationTasks.splice(destination.index, 0, movedTask);
 
-    setTasks({
-      ...tasks,
-      [sourceColumn]: sourceItems,
-      [destColumn]: destItems,
+      return {
+        ...prevTasks,
+        [source.droppableId]: sourceTasks,
+        [destination.droppableId]: destinationTasks,
+      };
     });
-  };
-
-  const getDueDateColor = (dueDate) => {
-    const today = new Date('2025-06-12');
-    const due = new Date(dueDate);
-    if (due < today) return 'text-red-500'; // Overdue
-    if (due.toDateString() === today.toDateString()) return 'text-yellow-500'; // Upcoming
-    return 'text-green-500'; // Completed
-  };
-
-  const getInitials = (name) => {
-    return name.charAt(0).toUpperCase();
-  };
+  }, []);
 
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <div className="p-4 bg-white dark:bg-gray-800 shadow-md rounded-lg animate-componentFadeIn">
-        <div className="flex space-x-4">
-          {Object.keys(tasks).map((column) => (
-            <Droppable droppableId={column} key={column}>
-              {(provided) => (
-                <div
-                  className="flex-1 p-3 bg-gray-100 dark:bg-gray-700 rounded-lg"
-                  {...provided.droppableProps}
-                  ref={provided.innerRef}
-                >
-                  <h3 className="text-lg font-semibold mb-2">{column}</h3>
-                  {tasks[column].map((task, index) => (
-                    <Draggable key={task.id} draggableId={task.id} index={index}>
-                      {(provided) => (
-                        <div
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          {...provided.dragHandleProps}
-                          className="p-3 mb-2 bg-white dark:bg-gray-600 shadow rounded-lg transition-transform duration-200"
-                        >
-                          <p>{task.content}</p>
-                          <div className="flex items-center space-x-2 mt-1">
-                            <div className="h-6 w-6 bg-blue-900 text-white rounded-full flex items-center justify-center text-xs">
-                              {getInitials(task.assignee)}
-                            </div>
-                            <span className="text-sm text-gray-500">{task.assignee}</span>
-                            <span className={`text-sm ${getDueDateColor(task.dueDate)}`}>{task.dueDate}</span>
-                            <span className={`h-4 w-4 rounded-full ${task.priority === 'high' ? 'bg-red-500' : 'bg-yellow-500'}`}></span>
-                          </div>
-                        </div>
-                      )}
-                    </Draggable>
-                  ))}
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
-          ))}
-        </div>
+    <div className="h-full flex flex-col">
+      <div className="p-2 border-b border-gray-200">
+        <h3 className="text-lg font-semibold text-gray-800">Action Items</h3>
       </div>
-    </DragDropContext>
+      <div className="flex-1 p-2 overflow-hidden">
+        <DragDropContext onDragEnd={onDragEnd}>
+          <div className="h-full grid grid-cols-1 lg:grid-cols-3 gap-2 min-h-0">
+            {['todo', 'inProgress', 'done'].map((columnId) => (
+              <Column
+                key={columnId}
+                columnId={columnId}
+                tasks={tasks[columnId]}
+                title={getColumnTitle(columnId)}
+              />
+            ))}
+          </div>
+        </DragDropContext>
+      </div>
+    </div>
   );
 };
 
-export default ActionItemsSection;
+export default memo(ActionItemsSection);

@@ -24,7 +24,50 @@ body {
   font-family: 'Outfit', sans-serif;
 }
 
-/* Existing Tailwind imports */
+/* Waveform animation for RecordingInterface */
+@keyframes waveform {
+  0% { width: 0%; }
+  50% { width: 50%; }
+  100% { width: 0%; }
+}
+.animate-waveform {
+  animation: waveform 2s infinite;
+}
+
+/* Fade-in animation for dropdowns and components */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.animate-fadeIn {
+  animation: fadeIn 0.2s ease-in forwards;
+}
+
+/* Component fade-in animation */
+@keyframes componentFadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-componentFadeIn {
+  animation: componentFadeIn 0.5s ease-out forwards;
+}
+
+/* Global styles for professional look */
+.card {
+  @apply bg-white dark:bg-gray-800 shadow-lg rounded-xl p-6 transition-all duration-300 hover:shadow-xl;
+}
+
+/* Hover effects for buttons and links */
+button:not(:disabled), a:not(:disabled) {
+  @apply transition-colors duration-200;
+}
+
+/* Ensure consistent spacing */
+.container {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+/* Tailwind imports */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

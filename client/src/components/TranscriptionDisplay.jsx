@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 
 const SkeletonLoader = () => (
-  <div className="space-y-4">
+  <div className="space-y-2">
     {[...Array(3)].map((_, index) => (
-      <div key={index} className="flex items-start space-x-4 animate-pulse">
-        <div className="w-16 h-4 bg-gray-200 rounded"></div>
-        <div className="flex-1 p-3 bg-gray-200 rounded-lg">
-          <div className="h-4 bg-gray-300 rounded w-1/4 mb-2"></div>
-          <div className="h-4 bg-gray-300 rounded w-3/4"></div>
+      <div key={index} className="flex items-start space-x-2 animate-pulse">
+        <div className="w-12 h-3 bg-gray-200 rounded"></div>
+        <div className="flex-1 p-2 bg-gray-200 rounded-lg">
+          <div className="h-3 bg-gray-300 rounded w-1/4 mb-1"></div>
+          <div className="h-3 bg-gray-300 rounded w-3/4"></div>
         </div>
       </div>
     ))}
@@ -47,79 +47,84 @@ const TranscriptionDisplay = ({ transcriptions }) => {
   });
 
   return (
-    <div className="p-4 bg-white dark:bg-gray-800 shadow-md rounded-lg animate-componentFadeIn">
-      {/* Real-Time Progress Bar */}
-      {progress < 100 && (
-        <div className="mb-4">
-          <p className="text-gray-700 dark:text-gray-300">Transcription in Progress...</p>
-          <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+    <div className="h-full flex flex-col">
+      {/* Header with Progress */}
+      <div className="p-2 border-b border-gray-200">
+        <div className="flex justify-between items-center mb-2">
+          <h3 className="text-sm font-medium text-gray-700">Transcription</h3>
+          {progress < 100 && (
+            <span className="text-xs text-gray-500">{progress}%</span>
+          )}
+        </div>
+        {progress < 100 && (
+          <div className="w-full bg-gray-200 rounded-full h-1.5">
             <div
-              className="bg-blue-600 h-2.5 rounded-full"
+              className="bg-blue-600 h-1.5 rounded-full"
               style={{ width: `${progress}%`, transition: 'width 0.5s ease-in-out' }}
             ></div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Search & Filter */}
-      <div className="flex justify-between mb-4">
+      <div className="p-2 border-b border-gray-200">
         {isLoading ? (
           <div className="flex justify-between w-full">
-            <div className="w-1/3 h-10 bg-gray-200 rounded-lg animate-pulse"></div>
-            <div className="flex space-x-2">
-              <div className="w-32 h-10 bg-gray-200 rounded-lg animate-pulse"></div>
-              <div className="w-32 h-10 bg-gray-200 rounded-lg animate-pulse"></div>
+            <div className="w-1/3 h-8 bg-gray-200 rounded animate-pulse"></div>
+            <div className="flex space-x-1">
+              <div className="w-24 h-8 bg-gray-200 rounded animate-pulse"></div>
+              <div className="w-24 h-8 bg-gray-200 rounded animate-pulse"></div>
             </div>
           </div>
         ) : (
-          <>
+          <div className="flex justify-between items-center space-x-2">
             <input
               type="text"
-              placeholder="Search transcriptions..."
+              placeholder="Search..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="p-2 border border-blue-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600 dark:bg-gray-700 dark:text-white"
+              className="flex-1 p-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
-            <div className="flex space-x-2">
-              <select
-                value={selectedSpeaker}
-                onChange={(e) => setSelectedSpeaker(e.target.value)}
-                className="p-2 border border-blue-900 rounded-lg dark:bg-gray-700 dark:text-white"
-              >
-                <option value="">Filter by Speaker</option>
-                <option value="Speaker 1">Speaker 1</option>
-                <option value="Speaker 2">Speaker 2</option>
-              </select>
-              <select
-                value={selectedTimeRange}
-                onChange={(e) => setSelectedTimeRange(e.target.value)}
-                className="p-2 border border-blue-900 rounded-lg dark:bg-gray-700 dark:text-white"
-              >
-                <option value="">Filter by Time</option>
-                <option value="00:00 - 01:00">0:00 - 1:00</option>
-                <option value="01:00 - 02:00">1:00 - 2:00</option>
-              </select>
-            </div>
-          </>
+            <select
+              value={selectedSpeaker}
+              onChange={(e) => setSelectedSpeaker(e.target.value)}
+              className="p-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+            >
+              <option value="">All Speakers</option>
+              <option value="Speaker 1">Speaker 1</option>
+              <option value="Speaker 2">Speaker 2</option>
+            </select>
+            <select
+              value={selectedTimeRange}
+              onChange={(e) => setSelectedTimeRange(e.target.value)}
+              className="p-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+            >
+              <option value="">All Time</option>
+              <option value="00:00 - 01:00">0:00 - 1:00</option>
+              <option value="01:00 - 02:00">1:00 - 2:00</option>
+            </select>
+          </div>
         )}
       </div>
 
       {/* Transcription Blocks */}
-      {isLoading ? (
-        <SkeletonLoader />
-      ) : (
-        <div className="space-y-4">
-          {filteredTranscriptions.map((transcription, index) => (
-            <div key={index} className="flex items-start space-x-4">
-              <span className="text-gray-500 text-sm">{transcription.timestamp}</span>
-              <div className={`p-3 rounded-lg ${transcription.speaker === 'Speaker 1' ? 'bg-blue-100' : 'bg-pink-100'} flex-1`}>
-                <p className="font-semibold">{transcription.speaker}</p>
-                <p>{transcription.text}</p>
+      <div className="flex-1 p-2 overflow-y-auto max-h-[calc(100vh-25rem)]">
+        {isLoading ? (
+          <SkeletonLoader />
+        ) : (
+          <div className="space-y-2">
+            {filteredTranscriptions.map((transcription, index) => (
+              <div key={index} className="flex items-start space-x-2">
+                <span className="text-xs text-gray-500 whitespace-nowrap">{transcription.timestamp}</span>
+                <div className={`p-2 rounded-lg ${transcription.speaker === 'Speaker 1' ? 'bg-blue-50' : 'bg-pink-50'} flex-1`}>
+                  <p className="text-xs font-medium text-gray-700">{transcription.speaker}</p>
+                  <p className="text-sm text-gray-600">{transcription.text}</p>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaChevronDown, FaChevronUp, FaSearch, FaCheck } from 'react-icons/fa';
+import { FaChevronDown, FaChevronUp, FaSearch, FaCheck, FaFilePdf, FaFileWord, FaFileAlt } from 'react-icons/fa';
 
 const SummarySkeletonLoader = () => (
   <div className="space-y-2">
@@ -30,50 +30,78 @@ const SummarySection = ({ summaries }) => {
   };
 
   return (
-    <div className="p-4 bg-white dark:bg-gray-800 shadow-md rounded-lg">
-      {/* Export Buttons */}
-      <div className="flex justify-end mb-4 space-x-2">
-        {isLoading ? (
-          <div className="flex space-x-2">
-            <div className="w-16 h-8 bg-gray-200 rounded animate-pulse"></div>
-            <div className="w-16 h-8 bg-gray-200 rounded animate-pulse"></div>
-            <div className="w-16 h-8 bg-gray-200 rounded animate-pulse"></div>
-          </div>
-        ) : (
-          <>
-            <button onClick={() => handleExport('PDF')} className="px-3 py-1 bg-blue-900 text-white rounded">PDF</button>
-            <button onClick={() => handleExport('DOCX')} className="px-3 py-1 bg-blue-900 text-white rounded">DOCX</button>
-            <button onClick={() => handleExport('TXT')} className="px-3 py-1 bg-blue-900 text-white rounded">TXT</button>
-          </>
-        )}
+    <div className="h-full flex flex-col">
+      <div className="p-4 border-b border-gray-200">
+        <h3 className="text-lg font-semibold text-gray-800">Meeting Summary</h3>
       </div>
-
-      {/* Summary Sections */}
-      {isLoading ? (
-        <SummarySkeletonLoader />
-      ) : (
-        summaries.map((summary, index) => (
-          <div key={index} className="mb-2">
-            <button
-              onClick={() => toggleSection(index)}
-              className="w-full flex justify-between items-center p-3 bg-gray-100 dark:bg-gray-700 rounded-lg"
-            >
-              <span className="flex items-center space-x-2">
-                {summary.type === 'summary' ? <FaSearch className="text-blue-900" /> : <FaCheck className="text-green-600" />}
-                <span>{summary.title}</span>
-              </span>
-              {expanded[index] ? <FaChevronUp /> : <FaChevronDown />}
-            </button>
-            {expanded[index] && (
-              <ul className="p-3 list-disc list-inside">
-                {summary.points.map((point, i) => (
-                  <li key={i} className="text-gray-700 dark:text-gray-300">{point}</li>
-                ))}
-              </ul>
+      
+      <div className="flex-1 p-4 overflow-hidden">
+        <div className="flex flex-col h-full">
+          {/* Export Buttons */}
+          <div className="flex justify-end mb-4 space-x-2">
+            {isLoading ? (
+              <div className="flex space-x-2">
+                <div className="w-16 h-8 bg-gray-200 rounded animate-pulse"></div>
+                <div className="w-16 h-8 bg-gray-200 rounded animate-pulse"></div>
+                <div className="w-16 h-8 bg-gray-200 rounded animate-pulse"></div>
+              </div>
+            ) : (
+              <>
+                <button onClick={() => handleExport('PDF')} className="inline-flex items-center px-3 py-1.5 bg-blue-900 text-white rounded text-sm hover:bg-blue-700 transition-colors">
+                  <FaFilePdf className="mr-1.5" /> PDF
+                </button>
+                <button onClick={() => handleExport('DOCX')} className="inline-flex items-center px-3 py-1.5 bg-blue-900 text-white rounded text-sm hover:bg-blue-700 transition-colors">
+                  <FaFileWord className="mr-1.5" /> DOCX
+                </button>
+                <button onClick={() => handleExport('TXT')} className="inline-flex items-center px-3 py-1.5 bg-blue-900 text-white rounded text-sm hover:bg-blue-700 transition-colors">
+                  <FaFileAlt className="mr-1.5" /> TXT
+                </button>
+              </>
             )}
           </div>
-        ))
-      )}
+
+          {/* Summary Sections */}
+          <div className="flex-1 overflow-y-auto min-h-0">
+            {isLoading ? (
+              <SummarySkeletonLoader />
+            ) : (
+              <div className="space-y-2">
+                {summaries.map((summary, index) => (
+                  <div key={index}>
+                    <button
+                      onClick={() => toggleSection(index)}
+                      className="w-full flex justify-between items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                    >
+                      <span className="flex items-center space-x-2">
+                        {summary.type === 'summary' ? (
+                          <FaSearch className="text-blue-900" />
+                        ) : (
+                          <FaCheck className="text-green-600" />
+                        )}
+                        <span className="text-sm font-medium text-gray-700">{summary.title}</span>
+                      </span>
+                      {expanded[index] ? (
+                        <FaChevronUp className="text-gray-400" />
+                      ) : (
+                        <FaChevronDown className="text-gray-400" />
+                      )}
+                    </button>
+                    {expanded[index] && (
+                      <div className="mt-2 p-3 bg-white rounded-lg border border-gray-200">
+                        <ul className="space-y-1.5">
+                          {summary.points.map((point, i) => (
+                            <li key={i} className="text-sm text-gray-600">{point}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
