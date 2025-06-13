@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Meeting Minutes</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <style>
+        .recording-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: .5;
+            }
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .gradient-border {
+            position: relative;
+            border-radius: 0.5rem;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            padding: 3px;
+        }
+        .gradient-border > div {
+            background: white;
+            border-radius: 0.375rem;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        #transcription-container {
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        
+        .transcription-entry {
+            padding: 8px;
+            margin-bottom: 8px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        #action-items-container {
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        
+        .action-item {
+            padding: 8px;
+            margin-bottom: 8px;
+            background-color: #fff;
+            border-left: 4px solid #007bff;
+            border-radius: 4px;
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        .action-item-content {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .priority {
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            text-transform: uppercase;
+        }
+        
+        .priority.high {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .priority.medium {
+            background-color: #ffc107;
+            color: black;
+        }
+        
+        .priority.low {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        #summary-container {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        
+        .summary-entry {
+            padding: 8px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <header class="text-center mb-12">
+            <div class="inline-block mb-4">
+                <div class="gradient-border">
+                    <div class="px-6 py-3">
+                        <h1 class="text-4xl font-bold text-gray-800">AI Meeting Minutes</h1>
+                        <p class="text-gray-600 mt-2">Real-time transcription and action item extraction</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Recording Controls -->
+            <div class="bg-white rounded-xl shadow-lg p-6 transform transition-all duration-300 hover:shadow-xl">
+                <div class="flex items-center mb-6">
+                    <i class="fas fa-microphone text-2xl text-gray-700 mr-3"></i>
+                    <h2 class="text-2xl font-semibold text-gray-800">Recording Controls</h2>
+                </div>
+                <div class="flex space-x-4 mb-6">
+                    <button id="startRecording" class="flex-1 bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition-colors duration-300 flex items-center justify-center">
+                        <i class="fas fa-play mr-2"></i>
+                        Start Recording
+                    </button>
+                    <button id="stopRecording" class="flex-1 bg-red-500 text-white px-6 py-3 rounded-lg hover:bg-red-600 transition-colors duration-300 flex items-center justify-center" disabled>
+                        <i class="fas fa-stop mr-2"></i>
+                        Stop Recording
+                    </button>
+                </div>
+                
+                <div class="mt-6">
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-upload text-2xl text-gray-700 mr-3"></i>
+                        <h3 class="text-xl font-semibold text-gray-800">Upload Audio File</h3>
+                    </div>
+                    <form id="uploadForm" class="flex flex-col space-y-4">
+                        <div class="relative border-2 border-dashed border-gray-300 rounded-lg p-6 hover:border-blue-500 transition-colors duration-300">
+                            <input type="file" id="audioFile" accept=".mp3,.wav,.m4a,.ogg" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                            <div class="text-center">
+                                <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-2"></i>
+                                <p class="text-gray-600">Drag and drop your audio file here or click to browse</p>
+                                <p class="text-sm text-gray-500 mt-1">Supported formats: MP3, WAV, M4A, OGG</p>
+                            </div>
+                        </div>
+                        <button type="submit" class="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition-colors duration-300 flex items-center justify-center">
+                            <i class="fas fa-upload mr-2"></i>
+                            Upload File
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Live Transcription -->
+            <div class="bg-white rounded-xl shadow-lg p-6 transform transition-all duration-300 hover:shadow-xl">
+                <div class="flex items-center mb-6">
+                    <i class="fas fa-comment-alt text-2xl text-gray-700 mr-3"></i>
+                    <h2 class="text-2xl font-semibold text-gray-800">Live Transcription</h2>
+                </div>
+                <div id="transcription-container" class="h-96 overflow-y-auto p-4 bg-gray-50 rounded-lg custom-scrollbar">
+                    <p class="text-gray-500 italic text-center py-8">Transcription will appear here...</p>
+                </div>
+                <div id="recordingStatus" class="hidden mt-4 text-center space-y-2">
+                    <span class="recording-pulse inline-flex items-center px-4 py-2 rounded-full bg-red-100 text-red-800">
+                        <span class="w-3 h-3 bg-red-600 rounded-full mr-2"></span>
+                        Recording in progress...
+                    </span>
+                    <div id="audioQualityIndicator" class="inline-flex items-center px-4 py-2 rounded-full bg-gray-100 text-gray-800">
+                        <i class="fas fa-microphone mr-2"></i>
+                        <span>Audio Quality: Good</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Items -->
+            <div class="bg-white rounded-xl shadow-lg p-6 transform transition-all duration-300 hover:shadow-xl">
+                <div class="flex items-center mb-6">
+                    <i class="fas fa-tasks text-2xl text-gray-700 mr-3"></i>
+                    <h2 class="text-2xl font-semibold text-gray-800">Action Items</h2>
+                </div>
+                <div id="action-items-container" class="space-y-4 max-h-96 overflow-y-auto custom-scrollbar">
+                    <p class="text-gray-500 italic text-center py-8">Action items will appear here...</p>
+                </div>
+            </div>
+
+            <!-- Meeting Summary -->
+            <div class="bg-white rounded-xl shadow-lg p-6 transform transition-all duration-300 hover:shadow-xl">
+                <div class="flex items-center mb-6">
+                    <i class="fas fa-file-alt text-2xl text-gray-700 mr-3"></i>
+                    <h2 class="text-2xl font-semibold text-gray-800">Meeting Summary</h2>
+                </div>
+                <div id="summary-container" class="p-4 bg-gray-50 rounded-lg max-h-96 overflow-y-auto custom-scrollbar">
+                    <p class="text-gray-500 italic text-center py-8">Summary will appear when the meeting ends...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toastContainer" class="fixed bottom-4 right-4 z-50"></div>
+
+    <script>
+        // Initialize debug overlay first
+        const debugOverlay = document.createElement('div');
+        debugOverlay.className = 'fixed bottom-4 left-4 bg-white p-4 rounded-lg shadow-lg z-50 max-w-md max-h-64 overflow-auto';
+        debugOverlay.innerHTML = `
+            <h3 class="font-semibold mb-2">Debug Info</h3>
+            <div id="debugContent" class="text-sm"></div>
+        `;
+        document.body.appendChild(debugOverlay);
+
+        // Debug logging function
+        function debugLog(message, data = null) {
+            const timestamp = new Date().toISOString();
+            console.log(`[${timestamp}] ${message}`, data);
+            
+            const debugContent = document.getElementById('debugContent');
+            if (debugContent) {
+                const entry = document.createElement('div');
+                entry.className = 'mb-1 border-b border-gray-200 pb-1';
+                entry.innerHTML = `
+                    <div class="text-xs text-gray-500">${timestamp}</div>
+                    <div class="text-gray-700">${message}</div>
+                    ${data ? `<pre class="text-xs bg-gray-100 p-1 mt-1 rounded">${JSON.stringify(data, null, 2)}</pre>` : ''}
+                `;
+                debugContent.insertBefore(entry, debugContent.firstChild);
+                
+                // Keep only last 10 entries
+                while (debugContent.children.length > 10) {
+                    debugContent.removeChild(debugContent.lastChild);
+                }
+            }
+        }
+
+        // Initialize Socket.IO with error handling
+        let socket;
+        try {
+            socket = io({
+                path: '/socket.io',
+                transports: ['websocket', 'polling'],
+                reconnectionAttempts: 10,
+                reconnectionDelay: 1000,
+                reconnectionDelayMax: 5000,
+                timeout: 60000,
+                pingTimeout: 30000,
+                pingInterval: 25000,
+                logger: true,
+                debug: true
+            });
+            
+            // Add connection status logging
+            socket.on('connect', () => {
+                debugLog('Socket.IO connected successfully');
+                console.log('Socket.IO connected with ID:', socket.id);
+                showToast('Connected to server', 'success');
+                
+                // Update UI to show connected status
+                const statusIndicator = document.createElement('div');
+                statusIndicator.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg';
+                statusIndicator.textContent = 'Connected to server';
+                document.body.appendChild(statusIndicator);
+                
+                setTimeout(() => {
+                    statusIndicator.remove();
+                }, 3000);
+            });
+
+            socket.on('connect_error', (error) => {
+                debugLog('Socket.IO connection error:', error);
+                console.error('Socket.IO connection error:', error);
+                showToast('Connection error: ' + error.message, 'error');
+            });
+
+            socket.on('disconnect', (reason) => {
+                debugLog('Socket.IO disconnected:', reason);
+                console.log('Socket.IO disconnected:', reason);
+                showToast('Disconnected from server: ' + reason, 'error');
+                
+                // Update UI to show disconnected status
+                const statusIndicator = document.createElement('div');
+                statusIndicator.className = 'fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg';
+                statusIndicator.textContent = 'Disconnected from server';
+                document.body.appendChild(statusIndicator);
+                
+                setTimeout(() => {
+                    statusIndicator.remove();
+                }, 3000);
+            });
+
+            socket.on('transcription_update', function(data) {
+                console.log('Received transcription update:', data);
+                debugLog('Received transcription update:', data);
+                
+                if (!data) {
+                    console.error('No data received in transcription update');
+                    debugLog('No data received in transcription update');
+                    return;
+                }
+                
+                // Get the transcription container
+                const transcriptionContainer = document.getElementById('transcription-container');
+                if (!transcriptionContainer) {
+                    console.error('Transcription container not found');
+                    debugLog('Transcription container not found');
+                    return;
+                }
+                
+                // Create new transcription entry
+                if (data.transcription && data.transcription.trim()) {
+                    debugLog('Adding new transcription entry:', data.transcription);
+                    
+                    const newTranscription = document.createElement('div');
+                    newTranscription.className = 'transcription-entry bg-white p-3 rounded-lg shadow-sm mb-2 animate-fade-in';
+                    newTranscription.textContent = data.transcription;
+                    
+                    // Add timestamp
+                    const timestamp = document.createElement('div');
+                    timestamp.className = 'text-xs text-gray-500 mt-1';
+                    timestamp.textContent = new Date().toLocaleTimeString();
+                    newTranscription.appendChild(timestamp);
+                    
+                    transcriptionContainer.appendChild(newTranscription);
+                    
+                    // Scroll to bottom
+                    transcriptionContainer.scrollTop = transcriptionContainer.scrollHeight;
+                    
+                    // Flash the background briefly to indicate new content
+                    newTranscription.style.backgroundColor = '#e3f2fd';
+                    setTimeout(() => {
+                        newTranscription.style.backgroundColor = 'white';
+                    }, 500);
+                } else {
+                    debugLog('No transcription text in update data');
+                }
+                
+                // Update action items if present
+                if (data.action_items && data.action_items.length > 0) {
+                    debugLog('Updating action items:', data.action_items);
+                    const actionItemsContainer = document.getElementById('action-items-container');
+                    if (actionItemsContainer) {
+                        data.action_items.forEach(item => {
+                            const actionItem = document.createElement('div');
+                            actionItem.className = 'action-item';
+                            actionItem.innerHTML = `
+                                <div class="action-item-content">
+                                    <span class="action-text">${item.text}</span>
+                                    ${item.assignee ? `<span class="assignee">Assigned to: ${item.assignee}</span>` : ''}
+                                    ${item.deadline ? `<span class="deadline">Due: ${item.deadline}</span>` : ''}
+                                    <span class="priority ${item.priority}">${item.priority}</span>
+                                </div>
+                            `;
+                            actionItemsContainer.appendChild(actionItem);
+                        });
+                    }
+                }
+                
+                // Update summary if present
+                if (data.summary) {
+                    debugLog('Updating summary:', data.summary);
+                    const summaryContainer = document.getElementById('summary-container');
+                    if (summaryContainer) {
+                        const summaryElement = document.createElement('div');
+                        summaryElement.className = 'summary-entry';
+                        summaryElement.textContent = data.summary;
+                        summaryContainer.innerHTML = ''; // Clear previous summary
+                        summaryContainer.appendChild(summaryElement);
+                    }
+                }
+            });
+
+            socket.on('transcription_error', function(error) {
+                console.error('Transcription error:', error);
+                showToast('Error processing audio: ' + error.message, 'error');
+            });
+
+            socket.on('processing_complete', (data) => {
+                try {
+                    debugLog('Processing complete received:', data);
+                    
+                    // Update transcription if provided
+                    if (data.transcription) {
+                        debugLog('Updating final transcription');
+                        transcriptionDiv.innerHTML = '';
+                        const p = document.createElement('p');
+                        p.className = 'mb-2 text-gray-700';
+                        p.textContent = data.transcription;
+                        transcriptionDiv.appendChild(p);
+                        transcriptionDiv.scrollTop = 0;
+                    }
+                    
+                    // Update action items
+                    if (data.action_items && data.action_items.length > 0) {
+                        debugLog('Updating final action items:', data.action_items);
+                        actionItemsDiv.innerHTML = '';
+                        data.action_items.forEach(item => {
+                            const actionItem = createActionItemElement(item);
+                            actionItemsDiv.appendChild(actionItem);
+                        });
+                        actionItemsDiv.scrollTop = 0;
+                    }
+                    
+                    // Update summary
+                    if (data.summary) {
+                        debugLog('Updating final summary:', data.summary);
+                        updateSummaryDisplay(data.summary);
+                    }
+                    
+                    showToast('Processing completed successfully', 'success');
+                } catch (error) {
+                    debugLog('Error handling processing complete:', error);
+                    showToast('Error updating final display: ' + error.message, 'error');
+                }
+            });
+
+            socket.on('processing_error', (data) => {
+                debugLog('Processing error:', data);
+                showToast('Error: ' + data.error, 'error');
+            });
+        } catch (error) {
+            console.error('Error initializing Socket.IO:', error);
+            showToast('Error connecting to server: ' + error.message, 'error');
+        }
+
+        let currentMeetingId = null;
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let mediaDevices = null;
+        let debugAudioChunks = []; // Store debug audio chunks
+        let chunkCounter = 0; // Counter for audio chunks
+        let isHighNoiseWarningShown = false;
+
+        // DOM Elements
+        const startButton = document.getElementById('startRecording');
+        const stopButton = document.getElementById('stopRecording');
+        const transcriptionDiv = document.getElementById('transcription-container');
+        const actionItemsDiv = document.getElementById('action-items-container');
+        const summaryDiv = document.getElementById('summary-container');
+        const uploadForm = document.getElementById('uploadForm');
+        const recordingStatus = document.getElementById('recordingStatus');
+        const audioFileInput = document.getElementById('audioFile');
+        const toastContainer = document.getElementById('toastContainer');
+
+        // Audio Processing Utilities
+        class AudioProcessor {
+            constructor() {
+                this.audioContext = null;
+                this.analyser = null;
+                this.gainNode = null;
+                this.noiseThreshold = -50; // Adjusted for better noise detection
+                this.silenceThreshold = -65; // Adjusted for better silence detection
+                this.consecutiveNoiseFrames = 0;
+                this.maxNoiseFrames = 3; // Reduced for faster noise detection
+                this.denoisingStrength = 0.85; // Increased noise reduction strength
+                this.speechFreqRange = {
+                    low: 85,   // Lowered to capture more of the human voice range
+                    high: 4000 // Increased to capture more speech frequencies
+                };
+            }
+
+            async initialize(stream) {
+                this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const source = this.audioContext.createMediaStreamSource(stream);
+                
+                // Create nodes for audio processing
+                this.analyser = this.audioContext.createAnalyser();
+                this.analyser.fftSize = 8192; // Increased for better frequency resolution
+                this.analyser.smoothingTimeConstant = 0.8; // Adjusted for smoother analysis
+                
+                // Create compressor with improved settings
+                this.compressor = this.audioContext.createDynamicsCompressor();
+                this.compressor.threshold.value = -45; // Adjusted threshold
+                this.compressor.knee.value = 30; // Softer knee
+                this.compressor.ratio.value = 8; // Reduced ratio for more natural sound
+                this.compressor.attack.value = 0.01; // Faster attack
+                this.compressor.release.value = 0.25; // Faster release
+
+                // Create and configure filters
+                this.preHighPass = this.audioContext.createBiquadFilter();
+                this.preHighPass.type = 'highpass';
+                this.preHighPass.frequency.value = 60; // Lowered to preserve more voice frequencies
+                this.preHighPass.Q.value = 0.7;
+
+                // Multiple band-pass filters for voice frequencies
+                this.bandpass1 = this.audioContext.createBiquadFilter();
+                this.bandpass1.type = 'bandpass';
+                this.bandpass1.frequency.value = 300;
+                this.bandpass1.Q.value = 0.7;
+
+                this.bandpass2 = this.audioContext.createBiquadFilter();
+                this.bandpass2.type = 'bandpass';
+                this.bandpass2.frequency.value = 1000;
+                this.bandpass2.Q.value = 0.7;
+
+                this.bandpass3 = this.audioContext.createBiquadFilter();
+                this.bandpass3.type = 'bandpass';
+                this.bandpass3.frequency.value = 2000;
+                this.bandpass3.Q.value = 0.7;
+
+                // Low-pass filter for final smoothing
+                this.lowpass = this.audioContext.createBiquadFilter();
+                this.lowpass.type = 'lowpass';
+                this.lowpass.frequency.value = this.speechFreqRange.high;
+                this.lowpass.Q.value = 0.7;
+
+                // Gain node for final volume adjustment
+                this.gainNode = this.audioContext.createGain();
+                this.gainNode.gain.value = 1.5; // Increased gain for better volume
+
+                // Connect the audio processing chain
+                source
+                    .connect(this.preHighPass)
+                    .connect(this.compressor)
+                    .connect(this.bandpass1)
+                    .connect(this.bandpass2)
+                    .connect(this.bandpass3)
+                    .connect(this.lowpass)
+                    .connect(this.gainNode)
+                    .connect(this.analyser);
+
+                return this.createFilteredStream();
+            }
+
+            createFilteredStream() {
+                const filteredDestination = this.audioContext.createMediaStreamDestination();
+                this.gainNode.connect(filteredDestination);
+                return filteredDestination.stream;
+            }
+
+            analyzeAudioLevel() {
+                const dataArray = new Float32Array(this.analyser.frequencyBinCount);
+                this.analyser.getFloatFrequencyData(dataArray);
+                
+                // Focus on speech frequency range
+                const speechRange = dataArray.slice(
+                    Math.floor(this.speechFreqRange.low * this.analyser.fftSize / this.audioContext.sampleRate),
+                    Math.ceil(this.speechFreqRange.high * this.analyser.fftSize / this.audioContext.sampleRate)
+                );
+                
+                // Calculate average volume level in speech range
+                const average = speechRange.reduce((a, b) => a + b) / speechRange.length;
+                
+                // Calculate noise level in non-speech frequencies
+                const nonSpeechRange = dataArray.filter((_, i) => {
+                    const freq = i * this.audioContext.sampleRate / this.analyser.fftSize;
+                    return freq < this.speechFreqRange.low || freq > this.speechFreqRange.high;
+                });
+                const noiseLevel = nonSpeechRange.reduce((a, b) => a + b) / nonSpeechRange.length;
+                
+                // Calculate signal-to-noise ratio
+                const snr = average - noiseLevel;
+                
+                if (snr < -20) { // Adjusted threshold for better noise detection
+                    this.consecutiveNoiseFrames++;
+                    if (this.consecutiveNoiseFrames >= this.maxNoiseFrames) {
+                        return 'high_noise';
+                    }
+                } else {
+                    this.consecutiveNoiseFrames = Math.max(0, this.consecutiveNoiseFrames - 1);
+                }
+                
+                if (average < this.silenceThreshold) {
+                    return 'silence';
+                }
+                
+                return 'good';
+            }
+
+            startNoiseMonitoring(onNoiseDetected) {
+                const checkNoise = () => {
+                    if (this.analyser) {
+                        const status = this.analyzeAudioLevel();
+                        onNoiseDetected(status);
+                        
+                        // Dynamically adjust noise reduction based on detected levels
+                        if (status === 'high_noise') {
+                            this.adjustNoiseReduction(true);
+                        } else if (status === 'good') {
+                            this.adjustNoiseReduction(false);
+                        }
+                    }
+                };
+                
+                this.monitoringInterval = setInterval(checkNoise, 500); // Increased monitoring frequency
+            }
+
+            stopNoiseMonitoring() {
+                if (this.monitoringInterval) {
+                    clearInterval(this.monitoringInterval);
+                }
+            }
+
+            adjustNoiseReduction(increaseReduction) {
+                if (increaseReduction) {
+                    // Increase noise reduction when high noise is detected
+                    this.bandpass1.Q.value = Math.min(1.2, this.bandpass1.Q.value + 0.1);
+                    this.bandpass2.Q.value = Math.min(1.2, this.bandpass2.Q.value + 0.1);
+                    this.bandpass3.Q.value = Math.min(1.2, this.bandpass3.Q.value + 0.1);
+                    this.compressor.threshold.value = Math.max(-55, this.compressor.threshold.value - 2);
+                    this.gainNode.gain.value = Math.max(1.0, this.gainNode.gain.value - 0.1);
+                } else {
+                    // Decrease noise reduction when audio is clean
+                    this.bandpass1.Q.value = Math.max(0.7, this.bandpass1.Q.value - 0.05);
+                    this.bandpass2.Q.value = Math.max(0.7, this.bandpass2.Q.value - 0.05);
+                    this.bandpass3.Q.value = Math.max(0.7, this.bandpass3.Q.value - 0.05);
+                    this.compressor.threshold.value = Math.min(-45, this.compressor.threshold.value + 1);
+                    this.gainNode.gain.value = Math.min(1.5, this.gainNode.gain.value + 0.05);
+                }
+            }
+        }
+
+        const audioProcessor = new AudioProcessor();
+
+        // Show toast notification
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            const bgColor = type === 'error' ? 'bg-red-500' : type === 'success' ? 'bg-green-500' : 'bg-blue-500';
+            toast.className = `${bgColor} text-white px-6 py-3 rounded-lg shadow-lg mb-3 flex items-center`;
+            toast.innerHTML = `
+                <i class="fas fa-${type === 'error' ? 'exclamation-circle' : type === 'success' ? 'check-circle' : 'info-circle'} mr-2"></i>
+                <span>${message}</span>
+            `;
+            toastContainer.appendChild(toast);
+            setTimeout(() => {
+                toast.remove();
+            }, 5000);
+        }
+
+        // Update file input display
+        audioFileInput.addEventListener('change', function() {
+            const fileName = this.files[0]?.name;
+            if (fileName) {
+                this.parentElement.querySelector('p').textContent = fileName;
+            }
+        });
+
+        // Initialize MediaDevices API
+        async function initializeMediaDevices() {
+            try {
+                // Check if running on HTTPS or localhost
+                const isLocalhost = location.hostname === 'localhost' || 
+                                  location.hostname === '127.0.0.1' ||
+                                  location.hostname.includes('192.168.') ||
+                                  location.hostname.includes('.local');
+                
+                if (!isLocalhost && location.protocol !== 'https:') {
+                    const errorMessage = 'This application requires a secure connection (HTTPS) or must be run on localhost. ' +
+                                       'Please either:\n\n' +
+                                       '1. Run the application on localhost (http://localhost:8081)\n' +
+                                       '2. Use HTTPS for your connection\n\n' +
+                                       'Current URL: ' + window.location.href;
+                    
+                    console.error(errorMessage);
+                    showToast(errorMessage, 'error');
+                    
+                    // Create a more visible error message
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'fixed top-0 left-0 right-0 bg-red-500 text-white p-4 text-center z-50';
+                    errorDiv.innerHTML = `
+                        <div class="max-w-2xl mx-auto">
+                            <h3 class="text-lg font-bold mb-2">Connection Error</h3>
+                            <p class="mb-2">${errorMessage}</p>
+                            <button onclick="window.location.href='http://localhost:8081'" 
+                                    class="bg-white text-red-500 px-4 py-2 rounded hover:bg-gray-100">
+                                Switch to localhost
+                            </button>
+                        </div>
+                    `;
+                    document.body.appendChild(errorDiv);
+                    
+                    // Disable recording controls
+                    startButton.disabled = true;
+                    stopButton.disabled = true;
+                    
+                    return false;
+                }
+                
+                // Ensure navigator.mediaDevices exists
+                if (!navigator.mediaDevices) {
+                    navigator.mediaDevices = {};
+                }
+                
+                // Initialize getUserMedia
+                if (!navigator.mediaDevices.getUserMedia) {
+                    navigator.mediaDevices.getUserMedia = function(constraints) {
+                        const getUserMedia = navigator.webkitGetUserMedia || 
+                                          navigator.mozGetUserMedia || 
+                                          navigator.msGetUserMedia;
+                        
+                        if (!getUserMedia) {
+                            throw new Error('getUserMedia is not implemented in this browser');
+                        }
+                        return new Promise((resolve, reject) => {
+                            getUserMedia.call(navigator, constraints, resolve, reject);
+                        });
+                    }
+                }
+                
+                // Test the getUserMedia to ensure it works
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                stream.getTracks().forEach(track => track.stop()); // Stop the test stream
+                
+                mediaDevices = navigator.mediaDevices;
+                return true;
+            } catch (err) {
+                console.error('Error initializing MediaDevices:', err);
+                
+                let errorMessage = 'Error accessing microphone: ';
+                if (err.name === 'NotAllowedError') {
+                    errorMessage += 'Microphone access was denied. Please allow microphone access in your browser settings.';
+                } else if (err.name === 'NotFoundError') {
+                    errorMessage += 'No microphone found. Please connect a microphone and try again.';
+                } else if (err.name === 'NotReadableError') {
+                    errorMessage += 'Your microphone is busy or not working properly. Please check if it\'s being used by another application.';
+                } else {
+                    errorMessage += err.message;
+                }
+                
+                showToast(errorMessage, 'error');
+                
+                // Create a more visible error message
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'fixed top-0 left-0 right-0 bg-red-500 text-white p-4 text-center z-50';
+                errorDiv.innerHTML = `
+                    <div class="max-w-2xl mx-auto">
+                        <h3 class="text-lg font-bold mb-2">Microphone Error</h3>
+                        <p class="mb-2">${errorMessage}</p>
+                        <div class="space-x-4">
+                            <button onclick="window.location.reload()" 
+                                    class="bg-white text-red-500 px-4 py-2 rounded hover:bg-gray-100">
+                                Retry
+                            </button>
+                            <button onclick="this.parentElement.parentElement.parentElement.remove()" 
+                                    class="bg-white text-red-500 px-4 py-2 rounded hover:bg-gray-100">
+                                Dismiss
+                            </button>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(errorDiv);
+                
+                // Disable recording controls
+                startButton.disabled = true;
+                stopButton.disabled = true;
+                
+                return false;
+            }
+        }
+
+        // Function to save debug recording
+        async function saveDebugRecording() {
+            try {
+                if (debugAudioChunks.length === 0) {
+                    debugLog('No audio chunks to save');
+                    return;
+                }
+
+                // Create a blob from all chunks
+                const audioBlob = new Blob(debugAudioChunks, { type: 'audio/webm' });
+                const audioUrl = URL.createObjectURL(audioBlob);
+                
+                // Create download link
+                const downloadLink = document.createElement('a');
+                downloadLink.href = audioUrl;
+                downloadLink.download = `debug-recording-${new Date().getTime()}.webm`;
+                
+                // Add to page
+                downloadLink.style.display = 'none';
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                
+                // Cleanup
+                document.body.removeChild(downloadLink);
+                URL.revokeObjectURL(audioUrl);
+                
+                debugLog(`Debug recording saved: ${downloadLink.download}`);
+                showToast('Debug recording saved', 'info');
+            } catch (err) {
+                debugLog('Error saving debug recording:', err);
+                showToast('Error saving debug recording', 'error');
+            }
+        }
+
+        // Add debug controls to the page
+        const debugControls = document.createElement('div');
+        debugControls.className = 'fixed top-4 right-4 bg-white p-4 rounded-lg shadow-lg z-50';
+        debugControls.innerHTML = `
+            <h3 class="text-lg font-semibold mb-2">Debug Controls</h3>
+            <button id="saveDebugRecording" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                Save Debug Recording
+            </button>
+            <div id="debugInfo" class="mt-2 text-sm text-gray-600"></div>
+        `;
+        document.body.appendChild(debugControls);
+
+        document.getElementById('saveDebugRecording').addEventListener('click', saveDebugRecording);
+
+        // Modify the mediaRecorder setup
+        startButton.addEventListener('click', async () => {
+            try {
+                debugAudioChunks = []; // Clear debug chunks
+                chunkCounter = 0;
+                debugLog('Starting new recording session');
+
+                // Initialize MediaDevices first
+                if (!mediaDevices && !(await initializeMediaDevices())) {
+                    throw new Error('Failed to initialize MediaDevices');
+                }
+                
+                const stream = await mediaDevices.getUserMedia({ audio: true });
+                debugLog('Audio stream obtained', {
+                    tracks: stream.getAudioTracks().map(track => ({
+                        label: track.label,
+                        enabled: track.enabled,
+                        muted: track.muted,
+                        settings: track.getSettings()
+                    }))
+                });
+                
+                // Initialize audio processor with the stream
+                const processedStream = await audioProcessor.initialize(stream);
+                
+                // Start noise monitoring
+                audioProcessor.startNoiseMonitoring((status) => {
+                    if (status === 'high_noise' && !isHighNoiseWarningShown) {
+                        showToast('High background noise detected. Please move to a quieter environment or adjust your microphone.', 'error');
+                        isHighNoiseWarningShown = true;
+                    } else if (status === 'good') {
+                        isHighNoiseWarningShown = false;
+                    }
+                    updateAudioQualityIndicator(status);
+                });
+
+                mediaRecorder = new MediaRecorder(processedStream, {
+                    mimeType: 'audio/webm',
+                    audioBitsPerSecond: 16000
+                });
+                audioChunks = [];
+                
+                mediaRecorder.ondataavailable = async (event) => {
+                    if (event.data.size > 0) {
+                        try {
+                            chunkCounter++;
+                            debugLog(`Processing chunk #${chunkCounter}, size: ${event.data.size} bytes`);
+                            debugAudioChunks.push(event.data);
+
+                            // Convert blob to Float32Array
+                            const buffer = await event.data.arrayBuffer();
+                            const view = new DataView(buffer);
+                            const audioData = new Float32Array(buffer.byteLength / 2);
+                            
+                            debugLog(`Buffer size: ${buffer.byteLength}, Audio data length: ${audioData.length}`);
+                            
+                            // Copy the buffer data to the Float32Array
+                            for (let i = 0; i < audioData.length; i++) {
+                                audioData[i] = view.getInt16(i * 2, true) / 32768.0;
+                            }
+                            
+                            // Log audio data statistics
+                            const stats = {
+                                min: Math.min(...audioData),
+                                max: Math.max(...audioData),
+                                avg: audioData.reduce((a, b) => a + b, 0) / audioData.length
+                            };
+                            debugLog('Audio data statistics:', stats);
+                            
+                            // Normalize the audio data
+                            const maxVal = Math.max(...Array.from(audioData).map(Math.abs));
+                            if (maxVal > 0) {
+                                for (let i = 0; i < audioData.length; i++) {
+                                    audioData[i] = audioData[i] / maxVal;
+                                }
+                            }
+                            
+                            // Update debug info
+                            const debugInfo = document.getElementById('debugInfo');
+                            debugInfo.textContent = `Chunks: ${chunkCounter}, Last chunk size: ${event.data.size} bytes`;
+                            
+                            // Send the audio data
+                            socket.emit('audio_chunk', {
+                                audio: Array.from(audioData),
+                                meeting_id: currentMeetingId,
+                                sample_rate: 16000
+                            });
+                            
+                            audioChunks.push(event.data);
+                            
+                        } catch (err) {
+                            debugLog('Error processing audio chunk:', err);
+                            showToast('Error processing audio chunk. Recording will continue.', 'error');
+                        }
+                    }
+                };
+
+                socket.emit('start_recording');
+                
+                mediaRecorder.start(500);  // Changed from 1000 to 500 milliseconds
+                startButton.disabled = true;
+                stopButton.disabled = false;
+                recordingStatus.classList.remove('hidden');
+                showToast('Recording started successfully', 'success');
+                debugLog('MediaRecorder started');
+            } catch (err) {
+                debugLog('Error starting recording:', err);
+                console.error('Error accessing microphone:', err);
+                showToast('Error accessing microphone. Please check permissions.', 'error');
+            }
+        });
+
+        // Modify stop button to include debug logging
+        stopButton.addEventListener('click', () => {
+            if (mediaRecorder && mediaRecorder.state === 'recording') {
+                debugLog('Stopping recording');
+                debugLog(`Total chunks recorded: ${chunkCounter}`);
+                
+                mediaRecorder.stop();
+                mediaRecorder.stream.getTracks().forEach(track => track.stop());
+                audioProcessor.stopNoiseMonitoring();
+                if (audioProcessor.audioContext) {
+                    audioProcessor.audioContext.close();
+                }
+                socket.emit('stop_recording', { meeting_id: currentMeetingId });
+                
+                startButton.disabled = false;
+                stopButton.disabled = true;
+                recordingStatus.classList.add('hidden');
+                showToast('Recording stopped', 'info');
+                
+                // Offer to save debug recording
+                if (debugAudioChunks.length > 0) {
+                    showToast('Click "Save Debug Recording" to download the audio file', 'info');
+                }
+            }
+        });
+
+        // Add socket event logging
+        const originalEmit = socket.emit;
+        socket.emit = function() {
+            debugLog('Socket.emit:', arguments);
+            return originalEmit.apply(this, arguments);
+        };
+
+        socket.on('recording_started', (data) => {
+            currentMeetingId = data.meeting_id;
+            transcriptionDiv.innerHTML = '<p class="text-gray-600 text-center py-4">Recording started...</p>';
+            showToast('Recording session initialized', 'success');
+        });
+
+        // Update audio quality indicator
+        function updateAudioQualityIndicator(status) {
+            const indicator = document.getElementById('audioQualityIndicator');
+            switch (status) {
+                case 'high_noise':
+                    indicator.className = 'inline-flex items-center px-4 py-2 rounded-full bg-red-100 text-red-800';
+                    indicator.innerHTML = '<i class="fas fa-exclamation-triangle mr-2"></i><span>Audio Quality: Poor (High Noise)</span>';
+                    break;
+                case 'silence':
+                    indicator.className = 'inline-flex items-center px-4 py-2 rounded-full bg-yellow-100 text-yellow-800';
+                    indicator.innerHTML = '<i class="fas fa-volume-mute mr-2"></i><span>Audio Quality: No Speech Detected</span>';
+                    break;
+                default:
+                    indicator.className = 'inline-flex items-center px-4 py-2 rounded-full bg-green-100 text-green-800';
+                    indicator.innerHTML = '<i class="fas fa-microphone mr-2"></i><span>Audio Quality: Good</span>';
+            }
+        }
+
+        // Add form submission handler
+        uploadForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const file = audioFileInput.files[0];
+            if (!file) {
+                showToast('Please select a file first', 'error');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showToast('File uploaded successfully', 'success');
+                    currentMeetingId = data.meeting_id;
+                } else {
+                    showToast(data.error || 'Upload failed', 'error');
+                }
+            } catch (err) {
+                console.error('Upload error:', err);
+                showToast('Upload failed: ' + err.message, 'error');
+            }
+        });
+
+        // Helper function to update summary display
+        function updateSummaryDisplay(summaryData) {
+            debugLog('Updating summary display with:', summaryData);
+            summaryDiv.innerHTML = '';
+
+            try {
+                // Create main summary section
+                if (summaryData.main_summary) {
+                    const mainSummaryDiv = document.createElement('div');
+                    mainSummaryDiv.className = 'mb-6 bg-white p-4 rounded-lg shadow-sm';
+                    mainSummaryDiv.innerHTML = `
+                        <h3 class="font-semibold text-lg mb-2 text-gray-800">Main Summary</h3>
+                        <p class="text-gray-700 leading-relaxed">${summaryData.main_summary}</p>
+                    `;
+                    summaryDiv.appendChild(mainSummaryDiv);
+                }
+
+                // Create topic summaries section
+                if (summaryData.topic_summaries && summaryData.topic_summaries.length > 0) {
+                    const topicsDiv = document.createElement('div');
+                    topicsDiv.className = 'mb-6 bg-white p-4 rounded-lg shadow-sm';
+                    topicsDiv.innerHTML = `
+                        <h3 class="font-semibold text-lg mb-3 text-gray-800">Topic Summaries</h3>
+                        <div class="space-y-3">
+                            ${summaryData.topic_summaries.map((topic, i) => `
+                                <div class="bg-gray-50 p-3 rounded-md">
+                                    <span class="text-sm font-medium text-gray-500 mb-1 block">Topic ${i + 1}</span>
+                                    <p class="text-gray-700">${topic}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                    summaryDiv.appendChild(topicsDiv);
+                }
+
+                // Create key points section
+                if (summaryData.key_points && summaryData.key_points.length > 0) {
+                    const keyPointsDiv = document.createElement('div');
+                    keyPointsDiv.className = 'mb-6 bg-white p-4 rounded-lg shadow-sm';
+                    keyPointsDiv.innerHTML = `
+                        <h3 class="font-semibold text-lg mb-3 text-gray-800">Key Points</h3>
+                        <ul class="list-disc list-inside space-y-2">
+                            ${summaryData.key_points.map(point => `
+                                <li class="text-gray-700 leading-relaxed">${point}</li>
+                            `).join('')}
+                        </ul>
+                    `;
+                    summaryDiv.appendChild(keyPointsDiv);
+                }
+
+                // Scroll to show new content
+                summaryDiv.scrollTop = 0;
+            } catch (error) {
+                debugLog('Error updating summary display:', error);
+                showToast('Error displaying summary: ' + error.message, 'error');
+            }
+        }
+
+        // Helper function to create action item element
+        function createActionItemElement(item) {
+            const div = document.createElement('div');
+            div.className = 'bg-white p-4 rounded-lg shadow-sm mb-4 border-l-4 ' + 
+                          (item.priority === 'high' ? 'border-red-500' : 
+                           item.priority === 'medium' ? 'border-yellow-500' : 'border-green-500');
+            
+            div.innerHTML = `
+                <div class="flex justify-between items-start mb-2">
+                    <h3 class="font-semibold text-gray-800">${item.text}</h3>
+                    <span class="px-2 py-1 rounded text-sm ${
+                        item.priority === 'high' ? 'bg-red-100 text-red-800' :
+                        item.priority === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                        'bg-green-100 text-green-800'
+                    }">${item.priority}</span>
+                </div>
+                ${item.assignee ? `
+                    <div class="text-sm text-gray-600 mb-1">
+                        <i class="fas fa-user mr-1"></i> ${item.assignee}
+                    </div>
+                ` : ''}
+                ${item.deadline ? `
+                    <div class="text-sm text-gray-600 mb-1">
+                        <i class="fas fa-clock mr-1"></i> ${item.deadline}
+                    </div>
+                ` : ''}
+                ${item.context ? `
+                    <div class="text-sm text-gray-600 mt-2 bg-gray-50 p-2 rounded">
+                        <i class="fas fa-quote-left mr-1"></i> ${item.context}
+                    </div>
+                ` : ''}
+            `;
+            
+            return div;
+        }
+
+        // Add styles for the animation
+        const style = document.createElement('style');
+        style.textContent = `
+            .animate-fade-in {
+                animation: fadeIn 0.5s ease-in;
+            }
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(-10px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html> 

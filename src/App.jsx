@@ -29,7 +29,7 @@ const App = () => {
 
   return (
     <Router>
-      <div className={`flex min-h-screen ${isDarkMode ? 'bg-gray-800 dark:bg-gray-900' : 'bg-gray-50'}`}>
+      <div className={`flex min-h-screen ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'}`}>
         <Sidebar />
         <div className="flex-1">
           <Header toggleTheme={toggleTheme} isDarkMode={isDarkMode} />
